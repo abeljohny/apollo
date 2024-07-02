@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Arena: Chat</title>
+    <style>
+        #response {
+            font-family: Arial, sans-serif;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 300px;
+            height: 150px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chatbot Response</h1>
+    <div id="response"></div>
+
+    <script>
+        function startStream() {
+            const responseDiv = document.getElementById('response');
+            const eventSource = new EventSource('/stream');
+
+            eventSource.onopen = function(event) {
+                console.log("Connection to server opened: ", event);
+            };
+
+            eventSource.onmessage = function(event) {
+                responseDiv.innerHTML += event.data;
+                responseDiv.scrollTop = responseDiv.scrollHeight;
+            };
+
+            eventSource.onerror = function(event) {
+                console.log("Event Source failed: ", event)
+                eventSource.close();
+            };
+        }
+
+        window.onload = startStream;
+    </script>
+</body>
+</html>
+
+
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <title>LLM Arena: Chat</title>#}
+{#</head>#}
+{#<body>#}
+{#    <input name="convobox" type="text">#}
+{##}
+{#    <script>#}
+{#          var searchForm = document.getElementById('convobox');#}
+{#          searchForm.addEventListener('submit', async function(event) {#}
+{#            event.preventDefault();#}
+{##}
+{#            var formData = new FormData(searchForm);#}
+{#            formData.append('input_text', searchForm.elements.input_text.value);#}
+{##}
+{#            try {#}
+{#              const response = await fetch('/completion', {#}
+{#                method: 'POST',#}
+{#                body: formData#}
+{#              });#}
+{#              const reader = response.body.getReader();#}
+{#              document.getElementById("result").innerHTML = "";#}
+{#              while (true) {#}
+{#                const {done, value} = await reader.read();#}
+{#                if (done) break;#}
+{#                const text = new TextDecoder().decode(value);#}
+{#                document.getElementById("result").innerHTML += text;#}
+{#              }#}
+{#            } catch (error) {#}
+{#              console.error(error);#}
+{#            }#}
+{#          });#}
+{#        </script>#}
+{#</body>#}
+{#</html>#}

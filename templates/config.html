@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Arena: Configuration</title>
+    <link rel="stylesheet" href="/static/css/config.css">
+
+    <script>
+        function showAgents(e) {
+            let divOptions = document.getElementById("divOptions");
+            if (divOptions.style.display === "none" || divOptions.style.display === "") {
+                divOptions.style.display = "inline-block";
+            } else {
+                divOptions.style.display = "none";
+            }
+        }
+        function hideAgents(e) {
+            let divOptions = document.getElementById("divOptions");
+            if (divOptions.contains(e.target)) {
+                divOptions.style.display = "inline-block";
+            } else {
+                divOptions.style.display = "none";
+            }
+        }
+    </script>
+</head>
+
+<form action="{{ url_for("new_conversation") }}" method="post">
+    <button type="submit">Submit</button>
+
+    <div class="container">
+        <textarea placeholder="Enter topic of discussion here" name="topic"></textarea>
+    </div>
+
+    <div class="container">
+        <p style="margin: 5px;">Select Agents</p>
+        <div class="custom-combobox-container">
+            <div class="custom-combobox" onclick="showAgents(this)">
+                <input class="model-input" type="text" id="models" name="models" readonly>
+                <img src="{{ url_for('static', filename='images/droparrow.png') }}" alt="arrow image" height="100">
+            </div>
+            <div class="options-container" id="divOptions" onmouseleave="hideAgents(this)">
+                {% for model in models %}
+                    <label for="{{ model }}"> <input type="checkbox" id="{{ model }}" value="{{ model }}"> {{ model }} </label>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let checkbox = document.querySelectorAll("#divOptions input");
+            let inputCheckbox = document.getElementById("models");
+
+            for (let i = 0; i < checkbox.length; i++) {
+                checkbox[i].addEventListener("change", (e) => {
+                    if (e.target.checked == true) {
+                        if (inputCheckbox.value == "") {
+                            inputCheckbox.value = checkbox[i].value;
+                        } else {
+                            inputCheckbox.value += `,${checkbox[i].value}`;
+                        }
+                    } else {
+                        let values = inputCheckbox.value.split(",");
+
+                        for (let r = 0; r < values.length; r++) {
+                            if (values[r] == e.target.value) {
+                                values.splice(r, 1);
+                            }
+                        }
+                        inputCheckbox.value = values;
+                    }
+                });
+            }
+        });
+
+    </script>
+</body>
+
+</html>
