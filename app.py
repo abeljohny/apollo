@@ -1,7 +1,18 @@
-from flask import Flask, render_template, request, Response, stream_with_context
+import uuid
+
+from flask import (
+    Flask,
+    render_template,
+    request,
+    Response,
+    stream_with_context,
+    session,
+)
 from llm_helpers import available_models, chat
+from database import Database
 
 app = Flask(__name__)
+db = Database()
 
 # def generate_chatbot_response():
 #     # Simulate generating chatbot tokens with a delay
@@ -20,30 +31,35 @@ app = Flask(__name__)
 #         yield f"data:{token}\n\n"
 
 
-@app.route('/')
+@app.route("/")
 def index():
     return render_template("index.html")
 
 
-@app.route('/prior')
+@app.route("/prior")
 def prior_conversations():
-    return 'Under active development!'
+    return "Under active development!"
 
 
-@app.route('/new', methods=["GET", "POST"])
+@app.route("/new", methods=["GET", "POST"])
 def new_conversation():
     if request.method == "POST":
         selected_models = request.form.get("models")
         topic = request.form.get("topic")
-        return render_template("chat.html", selected_models=selected_models, topic=topic)
+        db.cache_val("models", selected_models)
+        db.cache_val("topic", topic)
+        return render_template(
+            "chat.html", selected_models=selected_models, topic=topic
+        )
     system_models = available_models()
     return render_template("config.html", models=system_models)
 
 
 @app.route("/stream")
 def stream():
-    return Response(stream_with_context(chat("why is sky blue?")), content_type='text/event-stream')
+    topic = db.retrieve_val("topic")
+    return Response(stream_with_context(chat(topic)), content_type="text/event-stream")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
