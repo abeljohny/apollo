@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>LLM Arena: Home</title>
-     <link rel="stylesheet" href="/static/css/index.css">
+     <link rel="stylesheet" href="/static/css/pub-index.css">
 </head>
-<body>
-    <div class='container'>
-      <h1>LLM Arena</h1>
-      <div class="button-container">
-        <a href={{ url_for("prior_conversations") }}>Prior Conversations</a>
-        <a href={{ url_for("new_conversation") }}>New Conversation</a>
+<body class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="text-center">
+      <h1 class="text-3xl font-bold mb-8">LLM Arena</h1>
+      <div class="flex justify-center space-x-4">
+        <a class="text-blue-500 hover:underline" href={{ url_for("prior_conversations") }}>Prior Conversations</a>
+        <a class="text-blue-500 hover:underline" href={{ url_for("new_conversation") }}>New Conversation</a>
       </div>
     </div>
 </body>

@@ -1,25 +1,23 @@
 from flask import Flask, render_template, request, Response, stream_with_context
-import time
-from llm_helpers import available_models
+from llm_helpers import available_models, chat
 
 app = Flask(__name__)
 
-
-def generate_chatbot_response():
-    # Simulate generating chatbot tokens with a delay
-    responses = [
-        "Hello",
-        "there!",
-        "How",
-        "can",
-        "I",
-        "help",
-        "you",
-        "today?"
-    ]
-    for token in responses:
-        time.sleep(0.5)  # Simulate delay in token generation
-        yield f"data:{token}\n\n"
+# def generate_chatbot_response():
+#     # Simulate generating chatbot tokens with a delay
+#     responses = [
+#         "Hello",
+#         "there!",
+#         "How",
+#         "can",
+#         "I",
+#         "help",
+#         "you",
+#         "today?"
+#     ]
+#     for token in responses:
+#         time.sleep(0.5)  # Simulate delay in token generation
+#         yield f"data:{token}\n\n"
 
 
 @app.route('/')
@@ -44,7 +42,7 @@ def new_conversation():
 
 @app.route("/stream")
 def stream():
-    return Response(stream_with_context(generate_chatbot_response()), content_type='text/event-stream')
+    return Response(stream_with_context(chat("why is sky blue?")), content_type='text/event-stream')
 
 
 if __name__ == '__main__':

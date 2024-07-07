@@ -4,29 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LLM Arena: Chat</title>
-    <style>
-        #response {
-            font-family: Arial, sans-serif;
-            border: 1px solid #ccc;
-            padding: 10px;
-            width: 300px;
-            height: 150px;
-            overflow-y: auto;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/css/pub-index.css">
 </head>
-<body>
-    <h1>Chatbot Response</h1>
-    <div id="response"></div>
+<body class="bg-gray-100 p-8">
+    <div class="container mx-auto">
+      <h1 class="text-4xl font-bold text-center mb-8">LLM Chat</h1>
+        <div class="bg-gray-800 rounded-lg shadow-md p-6 max-h-[70vh] overflow-y-auto text-white" id="response">
+        </div>
+    </div>
 
     <script>
         function startStream() {
             const responseDiv = document.getElementById('response');
             const eventSource = new EventSource('/stream');
-
-            eventSource.onopen = function(event) {
-                console.log("Connection to server opened: ", event);
-            };
 
             eventSource.onmessage = function(event) {
                 responseDiv.innerHTML += event.data;
@@ -43,42 +33,3 @@
     </script>
 </body>
 </html>
-
-
-{#<!DOCTYPE html>#}
-{#<html lang="en">#}
-{#<head>#}
-{#    <meta charset="UTF-8">#}
-{#    <title>LLM Arena: Chat</title>#}
-{#</head>#}
-{#<body>#}
-{#    <input name="convobox" type="text">#}
-{##}
-{#    <script>#}
-{#          var searchForm = document.getElementById('convobox');#}
-{#          searchForm.addEventListener('submit', async function(event) {#}
-{#            event.preventDefault();#}
-{##}
-{#            var formData = new FormData(searchForm);#}
-{#            formData.append('input_text', searchForm.elements.input_text.value);#}
-{##}
-{#            try {#}
-{#              const response = await fetch('/completion', {#}
-{#                method: 'POST',#}
-{#                body: formData#}
-{#              });#}
-{#              const reader = response.body.getReader();#}
-{#              document.getElementById("result").innerHTML = "";#}
-{#              while (true) {#}
-{#                const {done, value} = await reader.read();#}
-{#                if (done) break;#}
-{#                const text = new TextDecoder().decode(value);#}
-{#                document.getElementById("result").innerHTML += text;#}
-{#              }#}
-{#            } catch (error) {#}
-{#              console.error(error);#}
-{#            }#}
-{#          });#}
-{#        </script>#}
-{#</body>#}
-{#</html>#}

@@ -13,4 +13,4 @@ def chat(input_text):
     )
 
     for chunk in stream:
-        yield chunk["message"]["content"]
+        yield f'data:{chunk["message"]["content"]}\n\n'
