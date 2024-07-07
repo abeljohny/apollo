@@ -2,7 +2,8 @@ import ollama
 
 
 def available_models():
-    return ["model1", "model2"]
+    system_models = ollama.list()
+    return [model['name'] for model in system_models["models"]]
 
 
 def chat(input_text):

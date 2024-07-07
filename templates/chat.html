@@ -5,31 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LLM Arena: Chat</title>
     <link rel="stylesheet" href="/static/css/pub-index.css">
+    {#    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>#}
 </head>
 <body class="bg-gray-100 p-8">
-    <div class="container mx-auto">
-      <h1 class="text-4xl font-bold text-center mb-8">LLM Chat</h1>
-        <div class="bg-gray-800 rounded-lg shadow-md p-6 max-h-[70vh] overflow-y-auto text-white" id="response">
-        </div>
+<div class="container mx-auto">
+    <h1 class="text-4xl font-bold text-center mb-8">LLM Chat</h1>
+    <div class="bg-gray-800 rounded-lg shadow-md p-6 max-h-[70vh] overflow-y-auto text-white" id="response">
     </div>
+</div>
+{#    <button id="convert-markdown" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">#}
+{#        Prettify#}
+{#    </button>#}
+<script>
+    /*
+    const convertMarkdownButton = document.getElementById('convert-markdown');
+    convertMarkdownButton.addEventListener('click', () => {
+        document.getElementById('response').innerHTML =
+            marked.parse(document.getElementById('response').innerHTML);
+    });
+    */
+    function startStream() {
+        const responseDiv = document.getElementById('response');
+        const eventSource = new EventSource('/stream');
 
-    <script>
-        function startStream() {
-            const responseDiv = document.getElementById('response');
-            const eventSource = new EventSource('/stream');
+        eventSource.onmessage = function (event) {
+            responseDiv.innerHTML += ' ' + event.data;
+            responseDiv.scrollTop = responseDiv.scrollHeight;
+        };
 
-            eventSource.onmessage = function(event) {
-                responseDiv.innerHTML += event.data;
-                responseDiv.scrollTop = responseDiv.scrollHeight;
-            };
+        eventSource.onerror = function (event) {
+            console.log("Event Source failed: ", event)
+            eventSource.close();
+        };
+    }
 
-            eventSource.onerror = function(event) {
-                console.log("Event Source failed: ", event)
-                eventSource.close();
-            };
-        }
-
-        window.onload = startStream;
-    </script>
+    window.onload = startStream;
+</script>
 </body>
 </html>
