@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/static/css/pub-index.css">
     {#    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>#}
 </head>
-<body class="bg-gray-100 p-8">
+<body class="bg-gray-100 p-8 ">
 <div class="container mx-auto">
     <h1 class="text-4xl font-bold text-center mb-8">LLM Chat</h1>
     <div class="bg-gray-800 rounded-lg shadow-md p-6 max-h-[70vh] overflow-y-auto text-white" id="response">
@@ -29,7 +29,7 @@
         const eventSource = new EventSource('/stream');
 
         eventSource.onmessage = function (event) {
-            responseDiv.innerHTML += ' ' + event.data;
+            responseDiv.innerHTML += event.data;
             responseDiv.scrollTop = responseDiv.scrollHeight;
         };
 

@@ -1,18 +1,15 @@
-import uuid
+from flask import Flask, Response, render_template, request, stream_with_context
 
-from flask import (
-    Flask,
-    render_template,
-    request,
-    Response,
-    stream_with_context,
-    session,
-)
-from llm_helpers import available_models, chat
+from arena import Arena
+from config import Config
+from constants import DatabaseKeys
 from database import Database
+from util_llm import UtilLLM
 
 app = Flask(__name__)
 db = Database()
+config = Config()
+arena = None
 
 # def generate_chatbot_response():
 #     # Simulate generating chatbot tokens with a delay
@@ -43,22 +40,24 @@ def prior_conversations():
 
 @app.route("/new", methods=["GET", "POST"])
 def new_conversation():
+    global arena
     if request.method == "POST":
-        selected_models = request.form.get("models")
-        topic = request.form.get("topic")
-        db.cache_val("models", selected_models)
-        db.cache_val("topic", topic)
+        selected_models = request.form.get(DatabaseKeys.MODELS.value)
+        discussion_topic = request.form.get(DatabaseKeys.TOPIC.value)
+        arena = Arena(discussion_topic, selected_models)
         return render_template(
-            "chat.html", selected_models=selected_models, topic=topic
+            "chat.html", selected_models=selected_models, topic=discussion_topic
         )
-    system_models = available_models()
+    system_models = UtilLLM.available_models()
     return render_template("config.html", models=system_models)
 
 
 @app.route("/stream")
 def stream():
-    topic = db.retrieve_val("topic")
-    return Response(stream_with_context(chat(topic)), content_type="text/event-stream")
+    return Response(
+        stream_with_context(arena.converse()),
+        content_type="text/event-stream",
+    )
 
 
 if __name__ == "__main__":
