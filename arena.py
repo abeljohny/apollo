@@ -33,7 +33,10 @@ class Arena(object):
             )
 
             partial_response = ""
-            yield f"data:Turn {turn_count} for {model}\n\n"
+            if selected_model_idx == 0 and turn_count == 0:
+                yield f"data:Turn {turn_count} for {model.title()[:-3]} :: \n\n"
+            else:
+                yield f"data:<br /><br />Turn {turn_count} for {model} :: \n\n"
             for chunk in stream:
                 partial_response += chunk["message"]["content"]
                 yield f'data: {chunk["message"]["content"]}\n\n'
@@ -41,10 +44,12 @@ class Arena(object):
             msgs.append(
                 {
                     "role": "user",
-                    "content": f"Turn {turn_count} for {model}: {partial_response}",
+                    "content": f"{model}: {partial_response}",
                 },
             )
 
             consensus_reached = UtilLLM.consensus_reached(partial_response)
 
             model_idx += 1
+
+        yield "data:<br /><br />-- CONSENSUS REACHED BY ALL PARTIES --\n\n"

@@ -25,7 +25,7 @@ Clarity and Precision: Communicate your points clearly and concisely. Ensure you
 
 Always provide a response: Always provide a constructive response even when it's difficult to do so.
 
-Aim to be concise: Your replies must be no more than two paragraphs and should be in plain text and not markdown. You can use HTML formatting. 
+Aim to be concise: Your replies must be no more than two paragraphs and should be in plain text and not markdown. You can use HTML formatting for example <br /> for line breaks.
 
 Additional Guidelines:
 

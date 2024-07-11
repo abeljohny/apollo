@@ -1,0 +1,17 @@
+{
+  "name": "llm-arena",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abeljohny/LLM-Arena.git"
+  },
+  "private": true,
+  "dependencies": {
+    "@tailwindcss/forms": "^0.5.7"
+  }
+}

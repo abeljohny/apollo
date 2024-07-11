@@ -2,9 +2,7 @@ from flask import Flask, Response, render_template, request, stream_with_context
 
 from arena import Arena
 from config import Config
-from constants import DatabaseKeys
 from database import Database
-from util_llm import UtilLLM
 
 app = Flask(__name__)
 db = Database()
@@ -30,6 +28,9 @@ arena = None
 
 @app.route("/")
 def index():
+    # return render_template("index.html")
+    # global arena
+    # arena = Arena("Why is the sun hot?", "gemma:latest,llama3:latest")
     return render_template("index.html")
 
 
@@ -42,14 +43,18 @@ def prior_conversations():
 def new_conversation():
     global arena
     if request.method == "POST":
-        selected_models = request.form.get(DatabaseKeys.MODELS.value)
-        discussion_topic = request.form.get(DatabaseKeys.TOPIC.value)
-        arena = Arena(discussion_topic, selected_models)
-        return render_template(
-            "chat.html", selected_models=selected_models, topic=discussion_topic
-        )
-    system_models = UtilLLM.available_models()
-    return render_template("config.html", models=system_models)
+        # selected_models = request.form.get(DatabaseKeys.MODELS.value)
+        discussion_topic = request.form.get("comment")
+        file = request.form.get("fileContents")
+        global arena
+        arena = Arena(discussion_topic, "gemma:latest,llama3:latest")
+        return render_template("chat.html")
+    #     arena = Arena(discussion_topic, selected_models)
+    #     return render_template(
+    #         "chat.html", selected_models=selected_models, topic=discussion_topic
+    #     )
+    # system_models = UtilLLM.available_models()
+    # return render_template("config.html", models=system_models)
 
 
 @app.route("/stream")
