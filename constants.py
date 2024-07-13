@@ -1,13 +1,6 @@
 from enum import Enum
 
 
-class DatabaseKeys(Enum):
-    """Redis Database Keys"""
-
-    TOPIC = "topic"
-    MODELS = "models"
-
-
 class FilePaths(Enum):
     """File Paths to configuration files"""
 
@@ -16,3 +9,25 @@ class FilePaths(Enum):
 
 class ConversationalMarkers(Enum):
     CONSENSUS_REACHED = "consensus reached"
+
+
+class Defaults(Enum):
+    AGENTS: list[str] = ["llama3:latest", "mistral:7b"]
+
+
+class Templates(Enum):
+    """HTML Templates used in Application"""
+
+    INDEX = "index.html"
+    CHAT = "chat.html"
+    SETTINGS = "settings.html"
+
+
+class ElementNames(Enum):
+    """Element Names for HTML tags"""
+
+    DISCUSSION_TOPIC = "comment"
+    FILE_CONTENTS = "fileContents"
+    SYSPROMPT = "about"
+    MAX_N_O_TURNS = "turnsCounter"
+    SELECTED_AGENTS = "selectedModels[]"

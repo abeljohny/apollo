@@ -3,10 +3,10 @@ import ollama
 from constants import ConversationalMarkers
 
 
-class UtilLLM(object):
+class Util(object):
     @staticmethod
-    def available_models():
-        """Returns Ollma models downloaded in system"""
+    def available_system_models():
+        """Returns Ollma models already available in system"""
         system_models = ollama.list()
         return [model["name"] for model in system_models["models"]]
 

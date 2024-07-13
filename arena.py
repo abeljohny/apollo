@@ -1,15 +1,14 @@
 import ollama
 
 from config import Config
-from util_llm import UtilLLM
+from util import Util
 
 
 class Arena(object):
-    def __init__(self, discussion_topic: str, participating_models: str) -> None:
+    def __init__(self, discussion_topic: str, config: Config) -> None:
         """Initializes an environment (Arena) for LLM models to discourse"""
         self._discussion_topic = discussion_topic
-        self._participating_models = participating_models.strip().split(",")
-        self._config = Config()
+        self._config = config
 
     def converse(self):
         consensus_reached = False
@@ -21,11 +20,11 @@ class Arena(object):
         ]
 
         while not consensus_reached:
-            selected_model_idx = model_idx % len(self._participating_models)
+            selected_model_idx = model_idx % len(self._config.selected_agents)
             if selected_model_idx == 0:
                 turn_count += 1
 
-            model = self._participating_models[selected_model_idx]
+            model = self._config.selected_agents[selected_model_idx]
             stream = ollama.chat(
                 model=model.strip(),
                 messages=msgs,
@@ -48,8 +47,12 @@ class Arena(object):
                 },
             )
 
-            consensus_reached = UtilLLM.consensus_reached(partial_response)
+            consensus_reached = Util.consensus_reached(partial_response)
 
             model_idx += 1
+
+            if turn_count > self._config.max_n_o_turns:
+                yield "data:<br /><br />-- TERMINATING CONVERSATION: MAX TURNS REACHED --\n\n"
+                return
 
         yield "data:<br /><br />-- CONSENSUS REACHED BY ALL PARTIES --\n\n"
