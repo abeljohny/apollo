@@ -8,7 +8,7 @@ class FilePaths(Enum):
 
 
 class ConversationalMarkers(Enum):
-    CONSENSUS_REACHED = "consensus reached"
+    CONSENSUS_REACHED = "{consensus-reached}"
 
 
 class Defaults(Enum):
@@ -31,3 +31,13 @@ class ElementNames(Enum):
     SYSPROMPT = "about"
     MAX_N_O_TURNS = "turnsCounter"
     SELECTED_AGENTS = "selectedModels[]"
+    AGENT_BEHAVIOR = "agentBehavior"
+
+
+class ModelNames(Enum):
+    """Supported LLMs"""
+
+    LLAMA = "llama3:latest"
+    GEMMA = "gemma2:latest"
+    MISTRAL = "mistral:instruct"
+    QWEN = "qwen2:latest"

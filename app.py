@@ -56,8 +56,9 @@ def new_conversation():
 
 @app.route("/stream")
 def stream():
+    global arena
     return Response(
-        stream_with_context(arena.converse()),
+        stream_with_context(arena.execute()),
         content_type="text/event-stream",
     )
 
@@ -66,15 +67,18 @@ def stream():
 def settings():
     if request.method == "POST":
         sysprompt = request.form.get(ElementNames.SYSPROMPT.value)
-        selected_agents = request.form.getlist(ElementNames.SELECTED_AGENTS.value)
         max_n_o_turns = request.form.get(ElementNames.MAX_N_O_TURNS.value)
+        selected_agents = request.form.getlist(ElementNames.SELECTED_AGENTS.value)
+        agent_behavior = request.form.get(ElementNames.AGENT_BEHAVIOR.value)
         config.set_system_prompt(sysprompt)
-        config.set_agents(selected_agents)
         config.set_max_turns(int(max_n_o_turns))
+        config.set_agents(selected_agents)
+        config.set_agent_behavior(agent_behavior)
 
     return render_template(
         Templates.SETTINGS.value,
         models=Util.available_system_models(),
+        behaviors=Util.agent_behaviors(),
         sysprompt=config.system_prompt,
         max_turns=config.max_n_o_turns,
         default_models=config.selected_agents,
@@ -87,4 +91,4 @@ def prior_conversations():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)

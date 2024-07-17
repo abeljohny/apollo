@@ -6,7 +6,7 @@ from constants import ConversationalMarkers
 class Util(object):
     @staticmethod
     def available_system_models():
-        """Returns Ollma models already available in system"""
+        """Returns Ollama models already available in system"""
         system_models = ollama.list()
         return [model["name"] for model in system_models["models"]]
 
@@ -25,3 +25,6 @@ class Util(object):
     #
     #     for chunk in stream:
     #         yield f'data:{chunk["message"]["content"]}\n\n'
+    @staticmethod
+    def agent_behaviors():
+        return ["None", "Summarize", "Devil's Advocate"]

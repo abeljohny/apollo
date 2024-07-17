@@ -1,4 +1,5 @@
 from constants import Defaults, FilePaths
+from file_manager import FileManager
 
 
 class Config(object):
@@ -10,21 +11,16 @@ class Config(object):
 
     def __init__(self):
         """Loads configuration files so that they can be made accessible as properties"""
-        with open(FilePaths.SYSTEM_PROMPT.value, "r") as file:
-            self._sysprompt = _DEFAULT_SYSPROMPT = file.read()
-
-        self._agents = Defaults.AGENTS.value
+        self._sysprompt = _DEFAULT_SYSPROMPT = FileManager.read_file(
+            FilePaths.SYSTEM_PROMPT.value
+        )
         self._max_n_o_turns = 10
+        self._agents = Defaults.AGENTS.value
+        self._agent_behavior = "None"
 
     @property
-    def system_prompt(self, get_custom_prompt: bool = True) -> str:
-        if get_custom_prompt:
-            if self._custom_sysprompt:
-                return self._sysprompt
-            else:
-                return ""
-        else:
-            return self._sysprompt
+    def system_prompt(self) -> str:
+        return self._sysprompt
 
     @property
     def max_n_o_turns(self):
@@ -33,6 +29,10 @@ class Config(object):
     @property
     def selected_agents(self) -> list[str]:
         return self._agents
+
+    @property
+    def agent_behavior(self) -> str:
+        return self._agent_behavior
 
     def set_system_prompt(self, sysprompt: str) -> None:
         if sysprompt.isspace():
@@ -45,3 +45,6 @@ class Config(object):
 
     def set_agents(self, agents: list[str]):
         self._agents = agents
+
+    def set_agent_behavior(self, behavior: str):
+        self._agent_behavior = behavior
