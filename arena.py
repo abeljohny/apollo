@@ -3,11 +3,11 @@ from orchestrator import Orchestrator
 
 
 class Arena(object):
-    def __init__(self, discussion_topic: str, config: Config) -> None:
+    def __init__(self, discussion_topic: str, file, config: Config) -> None:
         """Initializes an environment (Arena) for LLMs to discourse"""
-        self._discussion_topic = discussion_topic
-        self._config = config
-        self._orchestrator = Orchestrator(discussion_topic, config)
+        # self._discussion_topic = discussion_topic
+        # self._config = config
+        self._orchestrator = Orchestrator(discussion_topic, file, config)
 
     # def converse(self):
     #     consensus_reached = False

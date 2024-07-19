@@ -1,27 +1,35 @@
 from agent import Agent
 from config import Config
 from constants import ConversationalMarkers
+from utils.file_manager import FileManager
 
 
 class Orchestrator:
     """Responsible for coordinating LLMs"""
 
-    def __init__(self, topic: str, config: Config):
+    def __init__(self, topic: str, file, config: Config):
         self._topic: str = topic
+        self._file: str = FileManager.parse_file(file)
         self._config: Config = config
         self._agents: list[Agent] = [
-            Agent(llm, idx) for idx, llm in enumerate(self._config.selected_agents)
+            Agent(llm, idx, self._config)
+            for idx, llm in enumerate(self._config.selected_agents)
         ]
-        self._consensus: bool = False
+        self._consensus = {
+            "final_consensus_reached": False,
+            "intermediate_consensus_reached": False,
+            "agents_in_consensus": set(),
+        }
         self._turn: int = -1
 
+    @property
     def _context(self):
         return {
             "n_o_agents": len(self._agents),
             "agent_names": [agent.name for agent in self._agents],
+            "current_agent": None,
             "turn": self._turn,
-            "intermediate_consensus_reached": False,
-            "agents_in_consensus": set(),
+            "consensus": self._consensus,
         }
 
     @staticmethod
@@ -35,12 +43,27 @@ class Orchestrator:
         agent_idx: int = 0
         msgs = [
             {"role": "system", "content": f"{self._config.system_prompt}"},
-            {"role": "user", "content": f"Topic: {self._topic}"},
         ]
 
-        context = self._context()
+        if self._file is not None:
+            msgs.append(
+                {
+                    "role": "user",
+                    "content": f"Topic: {self._topic}",
+                }
+            )
+            msgs.append(
+                {
+                    "role": "user",
+                    "content": f"Attached File: {self._file.strip()[:1000]}",
+                }
+            )
+        else:
+            msgs.append({"role": "user", "content": f"Topic: {self._topic}"})
 
-        while not self._consensus:
+        while not self._consensus["final_consensus_reached"]:
+            context = self._context
+
             # select agent
             selected_agent_idx = agent_idx % len(self._agents)
             if selected_agent_idx == 0:
@@ -56,12 +79,19 @@ class Orchestrator:
             )
 
             if self.consensus_detected(agent.last_response):
-                context["intermediate_consensus_reached"] = True
-                context["agents_in_consensus"].add(agent.name)
+                self._consensus["intermediate_consensus_reached"] = True
+                self._consensus["agents_in_consensus"].add(agent.name)
 
-            if len(context["agents_in_consensus"]) == context["n_o_agents"]:
-                self._consensus = True
-                yield "data:<br /><br />-- CONSENSUS REACHED BY ALL PARTIES --\n\n"
+            if (
+                len(context["consensus"]["agents_in_consensus"])
+                == context["n_o_agents"]
+            ):
+                self._consensus["final_consensus_reached"] = True
+                yield "data:<br /><br />-- SYSTEM: CONSENSUS REACHED BY ALL PARTIES --\n\n"
+                return
+
+            if self._turn == self._config.max_n_o_turns:
+                yield "data:<br /><br />-- SYSTEM: TERMINATING DISCUSSION AS MAX TURNS REACHED --\n\n"
                 return
 
         # model_idx = 0

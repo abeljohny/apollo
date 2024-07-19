@@ -27,4 +27,8 @@ class Util(object):
     #         yield f'data:{chunk["message"]["content"]}\n\n'
     @staticmethod
     def agent_behaviors():
-        return ["None", "Summarize", "Devil's Advocate"]
+        return [
+            "Classic Round-Robin Debate",
+            "Summarized Discussion",
+            "Devil's Advocate Debate",
+        ]

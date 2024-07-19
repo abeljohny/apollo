@@ -7,6 +7,10 @@ class FilePaths(Enum):
     SYSTEM_PROMPT = "config/sysprompt.txt"
 
 
+class SupportedFileTypes(Enum):
+    PDF = ".pdf"
+
+
 class ConversationalMarkers(Enum):
     CONSENSUS_REACHED = "{consensus-reached}"
 
@@ -28,6 +32,7 @@ class ElementNames(Enum):
 
     DISCUSSION_TOPIC = "comment"
     FILE_CONTENTS = "fileContents"
+    FILE_NAME = "fileNameInput"
     SYSPROMPT = "about"
     MAX_N_O_TURNS = "turnsCounter"
     SELECTED_AGENTS = "selectedModels[]"
@@ -41,3 +46,8 @@ class ModelNames(Enum):
     GEMMA = "gemma2:latest"
     MISTRAL = "mistral:instruct"
     QWEN = "qwen2:latest"
+
+
+class ConfigParams(Enum):
+    MIN_TURN_FOR_SYSINTERJECT = 10
+    DEFAULT_MIN_TURN_FOR_SYSINTERJECT = -100

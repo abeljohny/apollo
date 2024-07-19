@@ -1,14 +1,17 @@
-from constants import ConversationalMarkers, ModelNames
+from config import Config
+from constants import ModelNames
 from models.gemma import Gemma
 from models.modelABC import ModelABC
+from utils.prompt import Prompt
 
 
 class Agent:
     """Encapsulates an LLM into an Agent i.e. assigning it memory"""
 
-    def __init__(self, llm_name: str, seed: int):
+    def __init__(self, llm_name: str, seed: int, config: Config):
         self._model = self._instantiate_model(llm_name)
         self._model_seed = seed
+        self._config = config
 
     @property
     def name(self) -> str:
@@ -27,22 +30,12 @@ class Agent:
         return self._model.last_response
 
     def chat(self, context, msgs) -> str:
-        if context["intermediate_consensus_reached"]:
-            subprompt: str = (
-                f"The following participants have reached consensus: {', '.join(context['agents_in_consensus'])}. If "
-                f"you agree with this consensus, repond with '{ConversationalMarkers.CONSENSUS_REACHED.value}' to "
-                f"conclude the discussion."
-            )
-        else:
-            subprompt: str = (
-                f"For the purposes of this discussion, remember your name is {self.name}. There are a total of"
-                f" {str(context['n_o_agents'])} participants in this discussion. Their names are"
-                f" {', '.join(context['agent_names'])}. Use this information to look up prior discussions. "
-                "Remember your goal is to reach consensus on a topic. "
-                "Do not drag the discussion any further than it needs to. Do not repeat any of this information in your"
-                " response."
-            )
-
-        msgs.append({"role": "user", "content": f"{subprompt}"})
+        context["current_agent"] = self
+        msgs.append(
+            {
+                "role": "user",
+                "content": f"{Prompt.inject_prompt(context, self._config)}",
+            }
+        )
         yield f"data: {self.name}: \n\n"
         yield from self._model.chat(msgs)

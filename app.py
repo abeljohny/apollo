@@ -42,10 +42,28 @@ def new_conversation():
     if request.method == "POST":
         # selected_models = request.form.get(DatabaseKeys.MODELS.value)
         discussion_topic = request.form.get(ElementNames.DISCUSSION_TOPIC.value)
+        if discussion_topic is not None:
+            config.set_discussion_topic(discussion_topic)
+        elif config.discussion_topic is not None:
+            discussion_topic = config.discussion_topic
+
         file = request.form.get(ElementNames.FILE_CONTENTS.value)
+        if file is not None:
+            config.set_filecontent(file)
+        elif config.filecontent is not None:
+            file = config.filecontent
+
+        filename = request.form.get(ElementNames.FILE_NAME.value)
+        if filename is not None:
+            config.set_filename(filename)
+        elif config.filename is not None:
+            filename = config.filename
+
         global arena
-        arena = Arena(discussion_topic, config)
-        return render_template(Templates.CHAT.value)
+        arena = Arena(
+            discussion_topic, {"file_name": filename, "file_contents": file}, config
+        )
+    return render_template(Templates.CHAT.value)
     #     arena = Arena(discussion_topic, selected_models)
     #     return render_template(
     #         "chat.html", selected_models=selected_models, topic=discussion_topic
