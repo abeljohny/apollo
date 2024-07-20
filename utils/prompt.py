@@ -40,10 +40,15 @@ class Prompt:
         else:
             if context["turn"] == config.min_turn_for_sysinterject:
                 prompt_to_inject = (
-                    f"You have only {config.max_n_o_turns - context.turn} turns left to reach a "
+                    f"You have only {config.max_n_o_turns - context['turn']} turns left to reach a "
                     f"conclusion. If you believe"
                     f" the discussion has reached a satisfactory outcome, respond with '"
                     f"{ConversationalMarkers.CONSENSUS_REACHED.value}' to conclude."
+                )
+            elif context["in_loop"]:
+                prompt_to_inject = (
+                    f"It seems like we are stuck in a loop and repeating the same response. Let's reset the "
+                    f"conversation. Please provide a fresh perspective or new information on the topic at hand. "
                 )
             else:
                 prompt_to_inject = (

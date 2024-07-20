@@ -1,6 +1,8 @@
+from collections import Counter
+
 from agent import Agent
 from config import Config
-from constants import ConversationalMarkers
+from constants import ConversationalMarkers, Formatting, SystemParams, SystemPrompts
 from utils.file_manager import FileManager
 
 
@@ -15,6 +17,8 @@ class Orchestrator:
             Agent(llm, idx, self._config)
             for idx, llm in enumerate(self._config.selected_agents)
         ]
+        self._conversation_counter = Counter()
+        self._in_loop: bool = False
         self._consensus = {
             "final_consensus_reached": False,
             "intermediate_consensus_reached": False,
@@ -30,6 +34,7 @@ class Orchestrator:
             "current_agent": None,
             "turn": self._turn,
             "consensus": self._consensus,
+            "in_loop": self._in_loop,
         }
 
     @staticmethod
@@ -38,6 +43,20 @@ class Orchestrator:
         return (
             ConversationalMarkers.CONSENSUS_REACHED.value in conversation_piece.lower()
         )
+
+    def loop_detected(self, val: str) -> bool:
+        self._conversation_counter[val] += 1
+        if (
+            self._conversation_counter.most_common(1)[0][1]
+            > SystemParams.MIN_LOOP_FOR_SYSINTERJECT.value
+        ):
+            return True
+        if (
+            len(self._conversation_counter)
+            == SystemParams.MAX_LOOKBACK_FOR_LOOP_DETECTION.value
+        ):
+            self._conversation_counter = Counter()
+        return False
 
     def initiate_debate(self):
         agent_idx: int = 0
@@ -72,8 +91,9 @@ class Orchestrator:
             agent_idx += 1
 
             yield from agent.chat(context, msgs)
-            yield f"data: <br /><br />\n\n"
+            yield f"data: {Formatting.LINE_BREAK.value * 2}\n\n"
             msgs = msgs[:-1]
+            response = f"{agent.name}: {agent.last_response}"
             msgs.append(
                 {"role": "user", "content": f"{agent.name}: {agent.last_response}"}
             )
@@ -87,12 +107,16 @@ class Orchestrator:
                 == context["n_o_agents"]
             ):
                 self._consensus["final_consensus_reached"] = True
-                yield "data:<br /><br />-- SYSTEM: CONSENSUS REACHED BY ALL PARTIES --\n\n"
+                yield f"data:{SystemPrompts.CONSENSUS_REACHED.value}\n\n"
                 return
 
             if self._turn == self._config.max_n_o_turns:
-                yield "data:<br /><br />-- SYSTEM: TERMINATING DISCUSSION AS MAX TURNS REACHED --\n\n"
+                yield f"data:{SystemPrompts.MAX_TURNS_REACHED.value}\n\n"
                 return
+
+            if self.loop_detected(response):
+                self._in_loop = True
+                yield f"data:{SystemPrompts.LOOP_DETECTED.value}\n\n"
 
         # model_idx = 0
         # turn_count = -1

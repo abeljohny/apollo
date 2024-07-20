@@ -48,6 +48,20 @@ class ModelNames(Enum):
     QWEN = "qwen2:latest"
 
 
-class ConfigParams(Enum):
+class SystemParams(Enum):
     MIN_TURN_FOR_SYSINTERJECT = 10
     DEFAULT_MIN_TURN_FOR_SYSINTERJECT = -100
+    MIN_LOOP_FOR_SYSINTERJECT = 3
+    MAX_LOOKBACK_FOR_LOOP_DETECTION = 5
+
+
+class SystemPrompts(Enum):
+    CONSENSUS_REACHED = "<br /><br />-- SYSTEM: consensus reached by all parties. --"
+    MAX_TURNS_REACHED = (
+        "<br /><br />-- SYSTEM: terminating discussion as max turns reached. --"
+    )
+    LOOP_DETECTED = "<br /><br />-- SYSTEM: Loop detected. Attempting to realign agents and restore proper flow."
+
+
+class Formatting(Enum):
+    LINE_BREAK = "<br />"

@@ -1,4 +1,4 @@
-from constants import ConfigParams, Defaults, FilePaths
+from constants import Defaults, FilePaths, SystemParams
 from utils.file_manager import FileManager
 
 
@@ -79,6 +79,6 @@ class Config(object):
         self._filename = filename
 
     def _calc_min_turn_for_sysinterject(self) -> int:
-        if self.max_n_o_turns >= ConfigParams.MIN_TURN_FOR_SYSINTERJECT.value:
+        if self.max_n_o_turns >= SystemParams.MIN_TURN_FOR_SYSINTERJECT.value:
             return self.max_n_o_turns - 2
-        return ConfigParams.DEFAULT_MIN_TURN_FOR_SYSINTERJECT.value
+        return SystemParams.DEFAULT_MIN_TURN_FOR_SYSINTERJECT.value
