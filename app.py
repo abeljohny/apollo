@@ -1,10 +1,10 @@
 from flask import Flask, Response, render_template, request, stream_with_context
 
+from agent import Agent
 from arena import Arena
 from config import Config
 from constants import ElementNames, Templates
 from database import Database
-from util import Util
 
 app = Flask(__name__)
 db = Database()
@@ -92,11 +92,10 @@ def settings():
         config.set_max_turns(int(max_n_o_turns))
         config.set_agents(selected_agents)
         config.set_agent_behavior(agent_behavior)
-
     return render_template(
         Templates.SETTINGS.value,
-        models=Util.available_system_models(),
-        behaviors=Util.agent_behaviors(),
+        models=Arena.available_system_models(),
+        behaviors=Agent.agent_behaviors(config.agent_behavior),
         sysprompt=config.system_prompt,
         max_turns=config.max_n_o_turns,
         default_models=config.selected_agents,

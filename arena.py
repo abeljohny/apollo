@@ -1,3 +1,5 @@
+import ollama
+
 from config import Config
 from orchestrator import Orchestrator
 
@@ -55,6 +57,12 @@ class Arena(object):
     #             return
     #
     #     yield "data:<br /><br />-- CONSENSUS REACHED BY ALL PARTIES --\n\n"
+
+    @staticmethod
+    def available_system_models():
+        """Returns Ollama models already available in system"""
+        system_models = ollama.list()
+        return [model["name"] for model in system_models["models"]]
 
     def execute(self):
         yield from self._orchestrator.initiate_debate()

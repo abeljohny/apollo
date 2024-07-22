@@ -1,5 +1,5 @@
 from config import Config
-from constants import ModelNames
+from constants import AgentBehaviors, ModelNames
 from models.gemma import Gemma
 from models.modelABC import ModelABC
 from utils.prompt import Prompt
@@ -24,6 +24,17 @@ class Agent:
         match llm_name:
             case ModelNames.GEMMA.value:
                 return Gemma()
+
+    @staticmethod
+    def agent_behaviors(behavior=None):
+        behaviors = {
+            AgentBehaviors.classic_rr.value,
+            AgentBehaviors.summarized.value,
+            AgentBehaviors.devils_advocate.value,
+        }
+        if behavior is None:
+            return list(behaviors)
+        return [behavior] + list(behaviors - {behavior})
 
     @property
     def last_response(self) -> str:

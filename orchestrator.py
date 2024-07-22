@@ -2,7 +2,13 @@ from collections import Counter
 
 from agent import Agent
 from config import Config
-from constants import ConversationalMarkers, Formatting, SystemParams, SystemPrompts
+from constants import (
+    AgentBehaviors,
+    ConversationalMarkers,
+    Formatting,
+    SystemParams,
+    SystemPrompts,
+)
 from utils.file_manager import FileManager
 
 
@@ -24,7 +30,10 @@ class Orchestrator:
             "intermediate_consensus_reached": False,
             "agents_in_consensus": set(),
         }
-        self._turn: int = -1
+        self._turn = {
+            "turn": -1,
+            "turn_updated": False,
+        }
 
     @property
     def _context(self):
@@ -32,7 +41,8 @@ class Orchestrator:
             "n_o_agents": len(self._agents),
             "agent_names": [agent.name for agent in self._agents],
             "current_agent": None,
-            "turn": self._turn,
+            "turn": self._turn["turn"],
+            "turn_updated": self._turn["turn_updated"],
             "consensus": self._consensus,
             "in_loop": self._in_loop,
         }
@@ -44,7 +54,7 @@ class Orchestrator:
             ConversationalMarkers.CONSENSUS_REACHED.value in conversation_piece.lower()
         )
 
-    def loop_detected(self, val: str) -> bool:
+    def _loop_detected(self, val: str) -> bool:
         self._conversation_counter[val] += 1
         if (
             self._conversation_counter.most_common(1)[0][1]
@@ -81,22 +91,42 @@ class Orchestrator:
             msgs.append({"role": "user", "content": f"Topic: {self._topic}"})
 
         while not self._consensus["final_consensus_reached"]:
-            context = self._context
-
             # select agent
             selected_agent_idx = agent_idx % len(self._agents)
             if selected_agent_idx == 0:
-                self._turn += 1
+                self._turn["turn"] += 1
+                if (
+                    self._turn["turn"] > 0
+                ):  # ignore for the very first turn as we don't have enough context
+                    self._turn["turn_updated"] = True
+            else:
+                if (
+                    self._turn["turn_updated"]
+                    and self._config.agent_behavior == AgentBehaviors.summarized.value
+                ):  # if prior turn was a new turn and Agents were asked to Summarize responses
+                    agent_idx -= 1
+                    selected_agent_idx = agent_idx % len(self._agents)
+                self._turn["turn_updated"] = False
+
             agent = self._agents[selected_agent_idx]
             agent_idx += 1
 
+            context = self._context
             yield from agent.chat(context, msgs)
             yield f"data: {Formatting.LINE_BREAK.value * 2}\n\n"
-            msgs = msgs[:-1]
+
+            msgs = msgs[:-1]  # remove agent-injected prompt
+
             response = f"{agent.name}: {agent.last_response}"
             msgs.append(
                 {"role": "user", "content": f"{agent.name}: {agent.last_response}"}
             )
+
+            if (
+                self._config.agent_behavior == AgentBehaviors.summarized.value
+                and self._turn["turn_updated"] is True
+            ):
+                msgs = [msgs[0], msgs[-1]]
 
             if self.consensus_detected(agent.last_response):
                 self._consensus["intermediate_consensus_reached"] = True
@@ -114,7 +144,7 @@ class Orchestrator:
                 yield f"data:{SystemPrompts.MAX_TURNS_REACHED.value}\n\n"
                 return
 
-            if self.loop_detected(response):
+            if self._loop_detected(response):
                 self._in_loop = True
                 yield f"data:{SystemPrompts.LOOP_DETECTED.value}\n\n"
 

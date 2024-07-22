@@ -16,7 +16,7 @@ class Config(object):
         )
         self._max_n_o_turns = 10
         self._agents = Defaults.AGENTS.value
-        self._agent_behavior = "None"
+        self._agent_behavior = None
         self._discussion_topic = ""
         self._filecontent = None
         self._filename = None

@@ -1,4 +1,4 @@
-from constants import ConversationalMarkers
+from constants import AgentBehaviors, ConversationalMarkers
 
 
 class Prompt:
@@ -49,6 +49,14 @@ class Prompt:
                 prompt_to_inject = (
                     f"It seems like we are stuck in a loop and repeating the same response. Let's reset the "
                     f"conversation. Please provide a fresh perspective or new information on the topic at hand. "
+                )
+            elif (
+                config.agent_behavior == AgentBehaviors.summarized.value
+                and context["turn_updated"] is True
+            ):
+                prompt_to_inject = (
+                    f"Please summarize all discussions that have taken place up to this point. Include "
+                    f"key points, and main topics. Your summary should be clear and concise."
                 )
             else:
                 prompt_to_inject = (

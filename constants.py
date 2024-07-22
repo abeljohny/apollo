@@ -55,13 +55,24 @@ class SystemParams(Enum):
     MAX_LOOKBACK_FOR_LOOP_DETECTION = 5
 
 
-class SystemPrompts(Enum):
-    CONSENSUS_REACHED = "<br /><br />-- SYSTEM: consensus reached by all parties. --"
-    MAX_TURNS_REACHED = (
-        "<br /><br />-- SYSTEM: terminating discussion as max turns reached. --"
-    )
-    LOOP_DETECTED = "<br /><br />-- SYSTEM: Loop detected. Attempting to realign agents and restore proper flow."
-
-
 class Formatting(Enum):
     LINE_BREAK = "<br />"
+    SYSPROMPT = "<div style='color: green; font-weight: bold;'><br />-- SYSTEM: {prompt} --</div>"
+
+
+class SystemPrompts(Enum):
+    CONSENSUS_REACHED = Formatting.SYSPROMPT.value.format(
+        prompt="consensus reached by all parties."
+    )
+    MAX_TURNS_REACHED = Formatting.SYSPROMPT.value.format(
+        prompt="terminating discussion as max turns reached."
+    )
+    LOOP_DETECTED = Formatting.SYSPROMPT.value.format(
+        prompt="loop detected: attempting to realign agents and restore proper flow."
+    )
+
+
+class AgentBehaviors(Enum):
+    classic_rr = "Classic Round-Robin Debate"
+    summarized = "Summarized Discussion"
+    devils_advocate = "Devil's Advocate Debate"
