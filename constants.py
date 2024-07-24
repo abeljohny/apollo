@@ -51,14 +51,19 @@ class ElementNames(Enum):
 
 
 class SystemParams(Enum):
-    MIN_PRCTGE_BEFORE_SYSINTERJECT = 70
+    MIN_PCT_BEFORE_SYSINTERJECT = 70
     MIN_LOOP_FOR_SYSINTERJECT = 3
     MAX_LOOKBACK_FOR_LOOP_DETECTION = 5
+    BIAS_THRESHOLD_PCT = 50
 
 
 class Formatting(Enum):
     LINE_BREAK = "<br />"
     SYSPROMPT = "<div style='color: green; font-weight: bold;'><br />-- SYSTEM: {prompt} --</div>"
+    BIASED_RESPONSE = "<span class='font-bold text-red-500'>Biased ({score})</span>"
+    UNBIASED_RESPONSE = (
+        "<span class='font-bold text-green-500'>Unbiased ({score})</span>"
+    )
 
 
 class SystemPrompts(Enum):
@@ -82,3 +87,8 @@ class AgentBehaviors(Enum):
 class Settings(Enum):
     FINAL_DECISION = "on"
     ALL_CONVO = "off"
+
+
+class BiasIndicators(Enum):
+    BIASED = "Biased"
+    UNBIASED = "Non-biased"

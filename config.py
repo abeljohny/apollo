@@ -100,7 +100,5 @@ class Config(object):
 
     def _calc_min_turn_for_sysinterject(self) -> int:
         return (
-            SystemParams.MIN_PRCTGE_BEFORE_SYSINTERJECT.value
-            * self.max_n_o_turns
-            // 100
+            SystemParams.MIN_PCT_BEFORE_SYSINTERJECT.value * self.max_n_o_turns // 100
         )
