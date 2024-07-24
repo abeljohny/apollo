@@ -9,7 +9,7 @@ class Bias:
 
     @staticmethod
     def classify_bias(text: str):
-        """Computes and returns how biased a string is"""
+        """Computes and returns how biased a piece of text is"""
         return classifier(text)
 
     @staticmethod
