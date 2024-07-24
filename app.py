@@ -1,4 +1,11 @@
-from flask import Flask, Response, render_template, request, stream_with_context
+from flask import (
+    Flask,
+    Response,
+    jsonify,
+    render_template,
+    request,
+    stream_with_context,
+)
 
 from agent import Agent
 from arena import Arena
@@ -72,6 +79,13 @@ def new_conversation():
     # return render_template("config.html", models=system_models)
 
 
+@app.route("/toggle_pause", methods=["POST"])
+def toggle_pause():
+    paused: bool = not config.is_paused
+    config.set_paused(paused)
+    return jsonify(paused=paused)
+
+
 @app.route("/stream")
 def stream():
     global arena
@@ -88,16 +102,20 @@ def settings():
         max_n_o_turns = request.form.get(ElementNames.MAX_N_O_TURNS.value)
         selected_agents = request.form.getlist(ElementNames.SELECTED_AGENTS.value)
         agent_behavior = request.form.get(ElementNames.AGENT_BEHAVIOR.value)
+        view = request.form.get(ElementNames.VIEW_TOGGLE.value)
         config.set_system_prompt(sysprompt)
         config.set_max_turns(int(max_n_o_turns))
         config.set_agents(selected_agents)
         config.set_agent_behavior(agent_behavior)
+        config.set_view(view)
+
     return render_template(
         Templates.SETTINGS.value,
         models=Arena.available_system_models(),
         behaviors=Agent.agent_behaviors(config.agent_behavior),
         sysprompt=config.system_prompt,
         max_turns=config.max_n_o_turns,
+        view=config.view,
         default_models=config.selected_agents,
     )
 

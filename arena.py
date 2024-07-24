@@ -8,7 +8,7 @@ class Arena(object):
     def __init__(self, discussion_topic: str, file, config: Config) -> None:
         """Initializes an environment (Arena) for LLMs to discourse"""
         # self._discussion_topic = discussion_topic
-        # self._config = config
+        self._config = config
         self._orchestrator = Orchestrator(discussion_topic, file, config)
 
     # def converse(self):

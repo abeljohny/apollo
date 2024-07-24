@@ -1,9 +1,9 @@
-from constants import Defaults, FilePaths, SystemParams
+from constants import Defaults, FilePaths, Settings, SystemParams
 from utils.file_manager import FileManager
 
 
 class Config(object):
-    _quiet: bool = True
+    _quiet: bool = False
     _agents: list[str] = []
     _sysprompt: str = None
     _custom_sysprompt: bool = False
@@ -17,9 +17,11 @@ class Config(object):
         self._max_n_o_turns = 10
         self._agents = Defaults.AGENTS.value
         self._agent_behavior = None
+        self._view = "off"
         self._discussion_topic = ""
         self._filecontent = None
         self._filename = None
+        self._is_paused = False
         self._min_turn_for_sysinterject = self._calc_min_turn_for_sysinterject()
 
     @property
@@ -39,6 +41,10 @@ class Config(object):
         return self._agent_behavior
 
     @property
+    def view(self) -> str:
+        return self._view
+
+    @property
     def discussion_topic(self) -> str:
         return self._discussion_topic
 
@@ -49,6 +55,10 @@ class Config(object):
     @property
     def filename(self) -> str:
         return self._filename
+
+    @property
+    def is_paused(self) -> bool:
+        return self._is_paused
 
     @property
     def min_turn_for_sysinterject(self):
@@ -63,11 +73,20 @@ class Config(object):
     def set_max_turns(self, turns: int):
         self._max_n_o_turns = turns
 
+    def set_paused(self, paused: bool):
+        self._is_paused = paused
+
     def set_agents(self, agents: list[str]):
         self._agents = agents
 
     def set_agent_behavior(self, behavior: str):
         self._agent_behavior = behavior
+
+    def set_view(self, view: str):
+        if view == "on":
+            self._view = Settings.FINAL_DECISION.value
+        else:
+            self._view = Settings.ALL_CONVO.value
 
     def set_discussion_topic(self, topic: str):
         self._discussion_topic = topic

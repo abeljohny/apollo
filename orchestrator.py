@@ -6,6 +6,7 @@ from constants import (
     AgentBehaviors,
     ConversationalMarkers,
     Formatting,
+    Settings,
     SystemParams,
     SystemPrompts,
 )
@@ -56,16 +57,20 @@ class Orchestrator:
 
     def _loop_detected(self, val: str) -> bool:
         self._conversation_counter[val] += 1
+
         if (
             self._conversation_counter.most_common(1)[0][1]
             > SystemParams.MIN_LOOP_FOR_SYSINTERJECT.value
         ):
+            self._conversation_counter = Counter()
             return True
+
         if (
             len(self._conversation_counter)
             == SystemParams.MAX_LOOKBACK_FOR_LOOP_DETECTION.value
         ):
             self._conversation_counter = Counter()
+
         return False
 
     def initiate_debate(self):
@@ -91,6 +96,8 @@ class Orchestrator:
             msgs.append({"role": "user", "content": f"Topic: {self._topic}"})
 
         while not self._consensus["final_consensus_reached"]:
+            if self._config.is_paused:
+                continue
             # select agent
             selected_agent_idx = agent_idx % len(self._agents)
             if selected_agent_idx == 0:
@@ -112,8 +119,16 @@ class Orchestrator:
             agent_idx += 1
 
             context = self._context
-            yield from agent.chat(context, msgs)
-            yield f"data: {Formatting.LINE_BREAK.value * 2}\n\n"
+
+            if self._config.view == Settings.ALL_CONVO.value:
+                yield from agent.chat(context, msgs)
+                yield f"data: {Formatting.LINE_BREAK.value * 2}\n\n"
+            else:
+                yield f"data: {agent.name} is responding...{Formatting.LINE_BREAK.value * 2}\n\n"
+                for _ in agent.chat(
+                    context, msgs
+                ):  # Agent's response is discarded for display if view is ON
+                    pass
 
             msgs = msgs[:-1]  # remove agent-injected prompt
 
@@ -138,6 +153,8 @@ class Orchestrator:
             ):
                 self._consensus["final_consensus_reached"] = True
                 yield f"data:{SystemPrompts.CONSENSUS_REACHED.value}\n\n"
+                if self._config.agent_behavior == AgentBehaviors.summarized.value:
+                    yield from agent.chat(self._context, msgs)
                 return
 
             if self._turn == self._config.max_n_o_turns:

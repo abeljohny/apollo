@@ -37,6 +37,12 @@ class Prompt:
                 f"you agree with this consensus, repond with '{ConversationalMarkers.CONSENSUS_REACHED.value}' to "
                 f"conclude the discussion."
             )
+        elif context["consensus"]["final_consensus_reached"]:
+            prompt_to_inject = (
+                f"Please summarize all discussions that have taken place after consensus was reached. "
+                f"Include key points, main topics discussed, and any new insights or conclusions "
+                f"drawn since reaching the consensus. Your summary should be clear and concise."
+            )
         else:
             if context["turn"] == config.min_turn_for_sysinterject:
                 prompt_to_inject = (

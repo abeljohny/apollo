@@ -15,8 +15,18 @@ class ConversationalMarkers(Enum):
     CONSENSUS_REACHED = "{consensus-reached}"
 
 
+class ModelNames(Enum):
+    """Supported LLMs"""
+
+    LLAMA = "llama3:latest"
+    GEMMA = "gemma2:latest"
+    MISTRAL = "mistral:instruct"
+    QWEN = "qwen2:latest"
+
+
 class Defaults(Enum):
-    AGENTS: list[str] = ["llama3:latest", "mistral:7b"]
+    # AGENTS: list[str] = ["llama3:latest", "mistral:7b"]
+    AGENTS: list[str] = [ModelNames.GEMMA.value, ModelNames.GEMMA.value]
 
 
 class Templates(Enum):
@@ -37,15 +47,7 @@ class ElementNames(Enum):
     MAX_N_O_TURNS = "turnsCounter"
     SELECTED_AGENTS = "selectedModels[]"
     AGENT_BEHAVIOR = "agentBehavior"
-
-
-class ModelNames(Enum):
-    """Supported LLMs"""
-
-    LLAMA = "llama3:latest"
-    GEMMA = "gemma2:latest"
-    MISTRAL = "mistral:instruct"
-    QWEN = "qwen2:latest"
+    VIEW_TOGGLE = "viewToggle"
 
 
 class SystemParams(Enum):
@@ -76,3 +78,8 @@ class AgentBehaviors(Enum):
     classic_rr = "Classic Round-Robin Debate"
     summarized = "Summarized Discussion"
     devils_advocate = "Devil's Advocate Debate"
+
+
+class Settings(Enum):
+    FINAL_DECISION = "on"
+    ALL_CONVO = "off"
