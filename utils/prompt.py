@@ -44,14 +44,7 @@ class Prompt:
                 f"drawn since reaching the consensus. Your summary should be clear and concise."
             )
         else:
-            if context["turn"] == config.min_turn_for_sysinterject:
-                prompt_to_inject = (
-                    f"You have only {config.max_n_o_turns - context['turn']} turns left to reach a "
-                    f"conclusion. If you believe"
-                    f" the discussion has reached a satisfactory outcome, respond with '"
-                    f"{ConversationalMarkers.CONSENSUS_REACHED.value}' to conclude."
-                )
-            elif context["in_loop"]:
+            if context["in_loop"]:
                 prompt_to_inject = (
                     f"It seems like we are stuck in a loop and repeating the same response. Let's reset the "
                     f"conversation. Please provide a fresh perspective or new information on the topic at hand. "
@@ -63,6 +56,13 @@ class Prompt:
                 prompt_to_inject = (
                     f"Please summarize all discussions that have taken place up to this point. Include "
                     f"key points, and main topics. Your summary should be clear and concise."
+                )
+            elif context["turn"] == config.min_turn_for_sysinterject:
+                prompt_to_inject = (
+                    f"You have only {config.max_n_o_turns - context['turn']} turn(s) left to reach a "
+                    f"conclusion. If you believe"
+                    f" the discussion has reached a satisfactory outcome, respond with '"
+                    f"{ConversationalMarkers.CONSENSUS_REACHED.value}' to conclude."
                 )
             else:
                 prompt_to_inject = (

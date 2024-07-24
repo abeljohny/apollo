@@ -72,6 +72,7 @@ class Config(object):
 
     def set_max_turns(self, turns: int):
         self._max_n_o_turns = turns
+        self._min_turn_for_sysinterject = self._calc_min_turn_for_sysinterject()
 
     def set_paused(self, paused: bool):
         self._is_paused = paused
@@ -98,6 +99,8 @@ class Config(object):
         self._filename = filename
 
     def _calc_min_turn_for_sysinterject(self) -> int:
-        if self.max_n_o_turns >= SystemParams.MIN_TURN_FOR_SYSINTERJECT.value:
-            return self.max_n_o_turns - 2
-        return SystemParams.DEFAULT_MIN_TURN_FOR_SYSINTERJECT.value
+        return (
+            SystemParams.MIN_PRCTGE_BEFORE_SYSINTERJECT.value
+            * self.max_n_o_turns
+            // 100
+        )

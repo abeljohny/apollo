@@ -152,9 +152,12 @@ class Orchestrator:
                 == context["n_o_agents"]
             ):
                 self._consensus["final_consensus_reached"] = True
-                yield f"data:{SystemPrompts.CONSENSUS_REACHED.value}\n\n"
-                if self._config.agent_behavior == AgentBehaviors.summarized.value:
+                if (
+                    self._config.agent_behavior == AgentBehaviors.summarized.value
+                    and self._config.view == Settings.FINAL_DECISION.value
+                ):
                     yield from agent.chat(self._context, msgs)
+                yield f"data:{SystemPrompts.CONSENSUS_REACHED.value}\n\n"
                 return
 
             if self._turn == self._config.max_n_o_turns:
