@@ -299,6 +299,37 @@
                                     </div>
                                 </div>
 
+                                <div class="col-span-full">
+                                    <div class="flex items-center justify-between" x-data="{ on: false }">
+                                      <span class="flex flex-grow flex-col">
+                                        <span class="text-sm font-medium leading-6 text-gray-900"
+                                              id="availability-label">Bias Score Display</span>
+                                        <span class="text-sm text-gray-500" id="availability-description">Toggle to enable or disable the calculation and display of bias scores after each response. Note: Enabling this feature is performance intensive.</span>
+                                      </span>
+                                        <!-- Enabled: "bg-indigo-600", Not Enabled: "bg-gray-200" -->
+                                        <input type="hidden" name="biasToggle" id="biasToggleInput" value="{{ bias }}">
+                                        <button type="button"
+                                                name="biasToggle"
+                                                class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+                                                role="switch" aria-checked="false" x-ref="switch"
+                                                x-data="{ on: {{ 'true' if bias == 'on' else 'false' }} }"
+                                                x-state:on="Enabled"
+                                                x-state:off="Not Enabled"
+                                                :class="{ 'bg-indigo-600': on, 'bg-gray-200': !(on) }"
+                                                aria-labelledby="availability-label"
+                                                aria-describedby="availability-description"
+                                                :aria-checked="on.toString()"
+                                                @click="on = !on; document.getElementById('biasToggleInput').value = on ? 'on' : 'off';">
+                                            <!-- Enabled: "translate-x-5", Not Enabled: "translate-x-0" -->
+                                            <span aria-hidden="true"
+                                                  class="pointer-events-none inline-block h-5 w-5 translate-x-0 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                                  x-state:on="Enabled" x-state:off="Not Enabled"
+                                                  :class="{ 'translate-x-5': on, 'translate-x-0': !(on) }">
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+
                                 {#                                <div class="col-span-full">#}
                                 {#                                    <label for="photo"#}
                                 {#                                           class="block text-sm font-medium leading-6 text-gray-900">Photo</label>#}

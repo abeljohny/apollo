@@ -47,6 +47,7 @@ class ElementNames(Enum):
     SELECTED_AGENTS = "selectedModels[]"
     AGENT_BEHAVIOR = "agentBehavior"
     VIEW_TOGGLE = "viewToggle"
+    BIAS_TOGGLE = "biasToggle"
 
 
 class SystemParams(Enum):
@@ -86,6 +87,8 @@ class AgentBehaviors(Enum):
 class Settings(Enum):
     FINAL_DECISION = "on"
     ALL_CONVO = "off"
+    SHOW_BIAS = "on"
+    HIDE_BIAS = "off"
 
 
 class BiasIndicators(Enum):

@@ -18,6 +18,7 @@ class Config(object):
         self._agents = Defaults.AGENTS.value
         self._agent_behavior = None
         self._view = "off"
+        self._bias = "off"
         self._discussion_topic = ""
         self._filecontent = None
         self._filename = None
@@ -43,6 +44,10 @@ class Config(object):
     @property
     def view(self) -> str:
         return self._view
+
+    @property
+    def bias(self) -> str:
+        return self._bias
 
     @property
     def discussion_topic(self) -> str:
@@ -88,6 +93,12 @@ class Config(object):
             self._view = Settings.FINAL_DECISION.value
         else:
             self._view = Settings.ALL_CONVO.value
+
+    def set_bias(self, bias: str):
+        if bias == "on":
+            self._bias = Settings.SHOW_BIAS.value
+        else:
+            self._bias = Settings.HIDE_BIAS.value
 
     def set_discussion_topic(self, topic: str):
         self._discussion_topic = topic

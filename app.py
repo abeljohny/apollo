@@ -18,22 +18,6 @@ db = Database()
 config = Config()
 arena = None
 
-# def generate_chatbot_response():
-#     # Simulate generating chatbot tokens with a delay
-#     responses = [
-#         "Hello",
-#         "there!",
-#         "How",
-#         "can",
-#         "I",
-#         "help",
-#         "you",
-#         "today?"
-#     ]
-#     for token in responses:
-#         time.sleep(0.5)  # Simulate delay in token generation
-#         yield f"data:{token}\n\n"
-
 
 @app.route("/")
 def index():
@@ -71,12 +55,6 @@ def new_conversation():
             discussion_topic, {"file_name": filename, "file_contents": file}, config
         )
     return render_template(Templates.CHAT.value)
-    #     arena = Arena(discussion_topic, selected_models)
-    #     return render_template(
-    #         "chat.html", selected_models=selected_models, topic=discussion_topic
-    #     )
-    # system_models = UtilLLM.available_models()
-    # return render_template("config.html", models=system_models)
 
 
 @app.route("/toggle_pause", methods=["POST"])
@@ -103,11 +81,13 @@ def settings():
         selected_agents = request.form.getlist(ElementNames.SELECTED_AGENTS.value)
         agent_behavior = request.form.get(ElementNames.AGENT_BEHAVIOR.value)
         view = request.form.get(ElementNames.VIEW_TOGGLE.value)
+        bias = request.form.get(ElementNames.BIAS_TOGGLE.value)
         config.set_system_prompt(sysprompt)
         config.set_max_turns(int(max_n_o_turns))
         config.set_agents(selected_agents)
         config.set_agent_behavior(agent_behavior)
         config.set_view(view)
+        config.set_bias(bias)
 
     return render_template(
         Templates.SETTINGS.value,
@@ -116,6 +96,7 @@ def settings():
         sysprompt=config.system_prompt,
         max_turns=config.max_n_o_turns,
         view=config.view,
+        bias=config.bias,
         default_models=config.selected_agents,
     )
 
