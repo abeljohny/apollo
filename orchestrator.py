@@ -10,7 +10,7 @@ from constants import (
     SystemParams,
     SystemPrompts,
 )
-from utils.Bias import Bias
+from utils.bias import Bias
 from utils.file_manager import FileManager
 
 
@@ -21,10 +21,20 @@ class Orchestrator:
         self._topic: str = topic
         self._file: str = FileManager.parse_file(file)
         self._config: Config = config
-        self._agents: list[Agent] = [
-            Agent(llm, idx, self._config)
-            for idx, llm in enumerate(self._config.selected_agents)
-        ]
+
+        # instantiate Agents
+        seen_models = {}
+        self._agents = []
+        for llm in self._config.selected_agents:
+            if llm in seen_models:
+                seen_models[llm] += 1
+                self._agents.append(
+                    Agent(llm_name=llm, seed=str(seen_models[llm]), config=self._config)
+                )
+            else:
+                seen_models[llm] = 0
+                self._agents.append(Agent(llm_name=llm, config=self._config))
+
         self._conversation_counter = Counter()
         self._in_loop: bool = False
         self._consensus = {

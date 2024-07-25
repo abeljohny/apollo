@@ -26,7 +26,6 @@ class ModelNames(Enum):
 
 class Defaults(Enum):
     AGENTS: list[str] = ["llama3:latest", "mistral:7b"]
-    # AGENTS: list[str] = [ModelNames.GEMMA.value, ModelNames.GEMMA.value]
 
 
 class Templates(Enum):

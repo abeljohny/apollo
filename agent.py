@@ -11,7 +11,7 @@ from utils.prompt import Prompt
 class Agent:
     """Encapsulates an LLM into an Agent i.e. assigning it memory"""
 
-    def __init__(self, llm_name: str, seed: int, config: Config):
+    def __init__(self, llm_name: str, config: Config, seed: str = ""):
         self._model = self._instantiate_model(llm_name)
         self._model_seed = seed
         self._config = config
@@ -20,7 +20,7 @@ class Agent:
     def name(self) -> str:
         """model names are in format <model name>:<parameter count | latest>. _model_seed ensures identical models
         have unique names."""
-        return self._model.name().split(":")[0].title() + str(self._model_seed)
+        return self._model.name().split(":")[0].title() + self._model_seed
 
     @staticmethod
     def _instantiate_model(llm_name: str) -> ModelABC:
