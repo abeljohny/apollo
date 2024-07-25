@@ -4,14 +4,14 @@ from constants import ModelNames
 from models.modelABC import ModelABC
 
 
-class Gemma(ModelABC):
+class Qwen(ModelABC):
     def __init__(self):
         super().__init__()
         self._response = ""
 
     @staticmethod
     def name() -> str:
-        return ModelNames.GEMMA.value
+        return ModelNames.QWEN.value
 
     @property
     def last_response(self) -> str:
@@ -19,7 +19,7 @@ class Gemma(ModelABC):
 
     def chat(self, context) -> str:
         stream = ollama.chat(
-            model=Gemma.name(),
+            model=Qwen.name(),
             messages=context,
             stream=True,
         )

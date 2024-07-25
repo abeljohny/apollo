@@ -20,13 +20,13 @@ class ModelNames(Enum):
 
     LLAMA = "llama3:latest"
     GEMMA = "gemma2:latest"
-    MISTRAL = "mistral:instruct"
+    MISTRAL = "mistral:7b"
     QWEN = "qwen2:latest"
 
 
 class Defaults(Enum):
-    # AGENTS: list[str] = ["llama3:latest", "mistral:7b"]
-    AGENTS: list[str] = [ModelNames.GEMMA.value, ModelNames.GEMMA.value]
+    AGENTS: list[str] = ["llama3:latest", "mistral:7b"]
+    # AGENTS: list[str] = [ModelNames.GEMMA.value, ModelNames.GEMMA.value]
 
 
 class Templates(Enum):

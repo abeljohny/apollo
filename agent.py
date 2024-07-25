@@ -1,7 +1,10 @@
 from config import Config
 from constants import AgentBehaviors, ModelNames
 from models.gemma import Gemma
+from models.llama import Llama
+from models.mistral import Mistral
 from models.modelABC import ModelABC
+from models.qwen import Qwen
 from utils.prompt import Prompt
 
 
@@ -24,6 +27,12 @@ class Agent:
         match llm_name:
             case ModelNames.GEMMA.value:
                 return Gemma()
+            case ModelNames.LLAMA.value:
+                return Llama()
+            case ModelNames.MISTRAL.value:
+                return Mistral()
+            case ModelNames.QWEN.value:
+                return Qwen()
 
     @staticmethod
     def agent_behaviors(behavior=None):
