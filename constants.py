@@ -26,6 +26,7 @@ class ModelNames(Enum):
 
 class Defaults(Enum):
     AGENTS: list[str] = ["llama3:latest", "mistral:7b"]
+    MAX_N_O_TURNS = 6
 
 
 class Templates(Enum):
@@ -60,9 +61,11 @@ class SystemParams(Enum):
 class Formatting(Enum):
     LINE_BREAK = "<br />"
     SYSPROMPT = "<div style='color: green; font-weight: bold;'><br />-- SYSTEM: {prompt} --</div>"
-    BIASED_RESPONSE = "<span class='font-bold text-red-500'>Biased ({score})</span>"
-    UNBIASED_RESPONSE = (
-        "<span class='font-bold text-green-500'>Unbiased ({score})</span>"
+    HARMFUL_RESPONSE = (
+        "<span class='font-bold text-red-500'>Harmful Response: {data}</span>"
+    )
+    HARMLESS_RESPONSE = (
+        "<span class='font-bold text-green-500'>Harmless Response</span>"
     )
 
 
@@ -87,10 +90,5 @@ class AgentBehaviors(Enum):
 class Settings(Enum):
     FINAL_DECISION = "on"
     ALL_CONVO = "off"
-    SHOW_BIAS = "on"
-    HIDE_BIAS = "off"
-
-
-class BiasIndicators(Enum):
-    BIASED = "Biased"
-    UNBIASED = "Non-biased"
+    SHOW_HARMFULNESS = "on"
+    HIDE_HARMFULNESS = "off"

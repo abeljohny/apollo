@@ -14,7 +14,7 @@ class Config(object):
         self._sysprompt = _DEFAULT_SYSPROMPT = FileManager.read_file(
             FilePaths.SYSTEM_PROMPT.value
         )
-        self._max_n_o_turns = 10
+        self._max_n_o_turns = Defaults.MAX_N_O_TURNS.value
         self._agents = Defaults.AGENTS.value
         self._agent_behavior = None
         self._view = "off"
@@ -96,9 +96,9 @@ class Config(object):
 
     def set_bias(self, bias: str):
         if bias == "on":
-            self._bias = Settings.SHOW_BIAS.value
+            self._bias = Settings.SHOW_HARMFULNESS.value
         else:
-            self._bias = Settings.HIDE_BIAS.value
+            self._bias = Settings.HIDE_HARMFULNESS.value
 
     def set_discussion_topic(self, topic: str):
         self._discussion_topic = topic

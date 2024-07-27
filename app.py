@@ -1,3 +1,5 @@
+from typing import Optional
+
 from flask import (
     Flask,
     Response,
@@ -16,14 +18,11 @@ from database import Database
 app = Flask(__name__)
 db = Database()
 config = Config()
-arena = None
+arena: Optional[Arena] = None
 
 
 @app.route("/")
 def index():
-    # return render_template("index.html")
-    # global arena
-    # arena = Arena("Why is the sun hot?", "gemma:latest,llama3:latest")
     return render_template(Templates.INDEX.value)
 
 
@@ -31,7 +30,6 @@ def index():
 def new_conversation():
     global arena
     if request.method == "POST":
-        # selected_models = request.form.get(DatabaseKeys.MODELS.value)
         discussion_topic = request.form.get(ElementNames.DISCUSSION_TOPIC.value)
         if discussion_topic is not None:
             config.set_discussion_topic(discussion_topic)

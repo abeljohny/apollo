@@ -72,8 +72,8 @@ class Prompt:
                     f" {', '.join(context['agent_names'])}. Use this information to look up prior discussions. "
                     "Your goal is to reach a consensus on the given topic. If the user has provided additional "
                     "information, it will be available under 'Attached File'. If no file is provided, proceed with the "
-                    "discussion using the information in 'Topic'."
-                    " Do not drag the discussion any further than it needs to."
+                    "discussion using the information in 'Topic'. Be sure to include clear and detailed explanations "
+                    "for your reasoning. Do not drag the discussion any further than it needs to."
                     " Do not repeat any of this information in your response."
                 )
         return prompt_to_inject

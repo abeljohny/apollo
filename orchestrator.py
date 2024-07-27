@@ -10,8 +10,8 @@ from constants import (
     SystemParams,
     SystemPrompts,
 )
-from utils.bias import Bias
 from utils.file_manager import FileManager
+from utils.harmfulness_classifier import HarmfulnessClassifier
 
 
 class Orchestrator:
@@ -134,8 +134,8 @@ class Orchestrator:
             if self._config.view == Settings.ALL_CONVO.value:
                 yield from agent.chat(context, msgs)
                 yield f"data: {Formatting.LINE_BREAK.value}\n\n"
-                if self._config.bias == Settings.SHOW_BIAS.value:
-                    yield f"data: {Bias.print_classify_bias(agent.last_response)}\n\n"
+                if self._config.bias == Settings.SHOW_HARMFULNESS.value:
+                    yield f"data: {HarmfulnessClassifier.print_classify_harmfulness(agent.last_response)}\n\n"
                 yield f"data: {Formatting.LINE_BREAK.value * 2}\n\n"
             else:
                 yield f"data: {agent.name} is responding...{Formatting.LINE_BREAK.value * 2}\n\n"
