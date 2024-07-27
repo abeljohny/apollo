@@ -18,14 +18,14 @@ class ConversationalMarkers(Enum):
 class ModelNames(Enum):
     """Supported LLMs"""
 
-    LLAMA = "llama3:latest"
+    LLAMA = "llama3.1:latest"
     GEMMA = "gemma2:latest"
     MISTRAL = "mistral:7b"
     QWEN = "qwen2:latest"
 
 
 class Defaults(Enum):
-    AGENTS: list[str] = ["llama3:latest", "mistral:7b"]
+    AGENTS: list[str] = [ModelNames.LLAMA.value, ModelNames.MISTRAL.value]
     MAX_N_O_TURNS = 6
 
 
