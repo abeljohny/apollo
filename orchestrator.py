@@ -12,15 +12,17 @@ from constants import (
 )
 from utils.file_manager import FileManager
 from utils.harmfulness_classifier import HarmfulnessClassifier
+from utils.persistence import Persistence
 
 
 class Orchestrator:
     """Responsible for coordinating LLMs"""
 
-    def __init__(self, topic: str, file, config: Config):
+    def __init__(self, topic: str, file, config: Config, persistence: Persistence):
         self._topic: str = topic
         self._file: str = FileManager.parse_file(file)
         self._config: Config = config
+        self._persistence: Persistence = persistence
 
         # instantiate Agents
         seen_models = {}
@@ -106,6 +108,7 @@ class Orchestrator:
         else:
             msgs.append({"role": "user", "content": f"Topic: {self._topic}"})
 
+        conversation_chunks = []
         while not self._consensus["final_consensus_reached"]:
             if self._config.is_paused:
                 continue
@@ -134,11 +137,27 @@ class Orchestrator:
             if self._config.view == Settings.ALL_CONVO.value:
                 yield from agent.chat(context, msgs)
                 yield f"data: {Formatting.LINE_BREAK.value}\n\n"
+                conversation_chunks.append(agent.name + ": " + agent.last_response)
+                conversation_chunks.append(Formatting.LINE_BREAK.value)
+
                 if self._config.bias == Settings.SHOW_HARMFULNESS.value:
-                    yield f"data: {HarmfulnessClassifier.print_classify_harmfulness(agent.last_response)}\n\n"
+                    harmfulness_metric = (
+                        HarmfulnessClassifier.print_classify_harmfulness(
+                            agent.last_response
+                        )
+                    )
+                    yield f"data: {harmfulness_metric}\n\n"
+                    conversation_chunks.append(harmfulness_metric)
+
                 yield f"data: {Formatting.LINE_BREAK.value * 2}\n\n"
+                conversation_chunks.append(Formatting.LINE_BREAK.value * 2)
+
             else:
                 yield f"data: {agent.name} is responding...{Formatting.LINE_BREAK.value * 2}\n\n"
+                conversation_chunks.append(
+                    f"{agent.name} is responding...{Formatting.LINE_BREAK.value * 2}"
+                )
+
                 for _ in agent.chat(
                     context, msgs
                 ):  # Agent's response is discarded for display if view is ON
@@ -172,57 +191,23 @@ class Orchestrator:
                 ):
                     yield from agent.chat(self._context, msgs)
                 yield f"data:{SystemPrompts.CONSENSUS_REACHED.value}\n\n"
+                conversation_chunks.append(SystemPrompts.CONSENSUS_REACHED.value)
+                conversation_chunks_str: str = "".join(conversation_chunks)
+                self._persistence.database.write_conversation_to_db(
+                    prompt=msgs[1]["content"][7:], conversation=conversation_chunks_str
+                )
                 return
 
             if self._turn == self._config.max_n_o_turns:
                 yield f"data:{SystemPrompts.MAX_TURNS_REACHED.value}\n\n"
+                conversation_chunks.append(SystemPrompts.MAX_TURNS_REACHED.value)
+                conversation_chunks_str: str = "".join(conversation_chunks)
+                self._persistence.database.write_conversation_to_db(
+                    prompt=msgs[1]["content"][7:], conversation=conversation_chunks_str
+                )
                 return
 
             if self._loop_detected(response):
                 self._in_loop = True
                 yield f"data:{SystemPrompts.LOOP_DETECTED.value}\n\n"
-
-        # model_idx = 0
-        # turn_count = -1
-        # msgs = [
-        #     {"role": "system", "content": f"{self._config.system_prompt}"},
-        #     {"role": "user", "content": f"{self._topic}"},
-        # ]
-        #
-        # while not self._consensus:
-        #     selected_model_idx = model_idx % len(self._agents)
-        #     if selected_model_idx == 0:
-        #         turn_count += 1
-        #
-        #     model = self._config.selected_agents[selected_model_idx]
-        #     stream = ollama.chat(
-        #         model=model.strip(),
-        #         messages=msgs,
-        #         stream=True,
-        #     )
-        #
-        #     partial_response = ""
-        #     if selected_model_idx == 0 and turn_count == 0:
-        #         yield f"data:Turn {turn_count} for {model.title()[:-3]} :: \n\n"
-        #     else:
-        #         yield f"data:<br /><br />Turn {turn_count} for {model} :: \n\n"
-        #     for chunk in stream:
-        #         partial_response += chunk["message"]["content"]
-        #         yield f'data: {chunk["message"]["content"]}\n\n'
-        #
-        #     msgs.append(
-        #         {
-        #             "role": "user",
-        #             "content": f"{model}: {partial_response}",
-        #         },
-        #     )
-        #
-        #     consensus_reached = Util.consensus_reached(partial_response)
-        #
-        #     model_idx += 1
-        #
-        #     if turn_count > self._config.max_n_o_turns:
-        #         yield "data:<br /><br />-- TERMINATING CONVERSATION: MAX TURNS REACHED --\n\n"
-        #         return
-        #
-        # yield "data:<br /><br />-- CONSENSUS REACHED BY ALL PARTIES --\n\n"
+                conversation_chunks.append(SystemPrompts.LOOP_DETECTED.value)

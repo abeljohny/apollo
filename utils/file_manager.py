@@ -8,6 +8,8 @@ from constants import SupportedFileTypes
 
 
 class FileManager(object):
+    """Manages Disk read-writes and File-Type Parsing"""
+
     def __init__(self):
         pass
 

@@ -34,6 +34,8 @@ class Templates(Enum):
 
     INDEX = "index.html"
     CHAT = "chat.html"
+    PRIOR = "prior.html"
+    PRIOR_INSTANCE = "prior_instance.html"
     SETTINGS = "settings.html"
 
 

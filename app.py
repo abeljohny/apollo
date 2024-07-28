@@ -13,11 +13,11 @@ from agent import Agent
 from arena import Arena
 from config import Config
 from constants import ElementNames, Templates
-from database import Database
+from utils.persistence import Persistence
 
 app = Flask(__name__)
-db = Database()
 config = Config()
+persistence = Persistence()
 arena: Optional[Arena] = None
 
 
@@ -50,7 +50,10 @@ def new_conversation():
 
         global arena
         arena = Arena(
-            discussion_topic, {"file_name": filename, "file_contents": file}, config
+            discussion_topic,
+            {"file_name": filename, "file_contents": file},
+            config,
+            persistence,
         )
     return render_template(Templates.CHAT.value)
 
@@ -69,6 +72,24 @@ def stream():
         stream_with_context(arena.execute()),
         content_type="text/event-stream",
     )
+
+
+@app.route("/prior")
+def prior():
+    record_keys = persistence.database.instance.keys()
+    records = []
+    for key in record_keys:
+        records.append(persistence.database.instance.hgetall(key))
+    return render_template(
+        Templates.PRIOR.value,
+        records=sorted(records, key=lambda record: record["timestamp"], reverse=True),
+    )
+
+
+@app.route("/prior_instance")
+def prior_instance():
+    conversation = request.args.get("conversation")
+    return render_template(Templates.PRIOR_INSTANCE.value, conversation=conversation)
 
 
 @app.route("/settings", methods=["GET", "POST"])
@@ -97,11 +118,6 @@ def settings():
         bias=config.bias,
         default_models=config.selected_agents,
     )
-
-
-@app.route("/prior")
-def prior_conversations():
-    return "Under active development!"
 
 
 if __name__ == "__main__":
