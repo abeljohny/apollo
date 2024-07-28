@@ -4,12 +4,18 @@ from datetime import datetime
 
 import redis
 
+from constants import Defaults
+
 
 class Database(object):
     """Manages Database read-writes"""
 
     def __init__(self):
-        self._redis = redis.Redis(host="localhost", port=6379, decode_responses=True)
+        self._redis = redis.Redis(
+            host=Defaults.DATABASE_HOST.value,
+            port=Defaults.DATABASE_PORT.value,
+            decode_responses=True,
+        )
 
     @staticmethod
     def generate_uuid():

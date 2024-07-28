@@ -27,6 +27,8 @@ class ModelNames(Enum):
 class Defaults(Enum):
     AGENTS: list[str] = [ModelNames.LLAMA.value, ModelNames.MISTRAL.value]
     MAX_N_O_TURNS = 6
+    DATABASE_HOST = "localhost"
+    DATABASE_PORT = 6379
 
 
 class Templates(Enum):
