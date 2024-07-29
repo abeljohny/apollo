@@ -112,6 +112,7 @@ class Orchestrator:
         while not self._consensus["final_consensus_reached"]:
             if self._config.is_paused:
                 continue
+
             # select agent
             selected_agent_idx = agent_idx % len(self._agents)
             if selected_agent_idx == 0:

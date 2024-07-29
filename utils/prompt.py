@@ -6,7 +6,7 @@ class Prompt:
         pass
 
     @staticmethod
-    def truncate_prompt(prompt: str, maxlen: int = 1000):
+    def truncate_prompt(prompt: str, maxlen: int = 80):
         if len(prompt) > maxlen:
             return prompt[:maxlen] + "..."
         return prompt

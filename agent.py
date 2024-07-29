@@ -9,7 +9,7 @@ from utils.prompt import Prompt
 
 
 class Agent:
-    """Encapsulates an LLM into an Agent i.e. assigning it memory"""
+    """Encapsulates an LLM into an Agent"""
 
     def __init__(self, llm_name: str, config: Config, seed: str = ""):
         self._model = self._instantiate_model(llm_name)
@@ -18,7 +18,7 @@ class Agent:
 
     @property
     def name(self) -> str:
-        """model names are in format <model name>:<parameter count | latest>. _model_seed ensures identical models
+        """Model names are in format <model name>:<parameter count | latest>. _model_seed ensures identical models
         have unique names."""
         return self._model.name().split(":")[0].title() + self._model_seed
 

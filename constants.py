@@ -89,11 +89,11 @@ class SystemPrompts(Enum):
 class AgentBehaviors(Enum):
     classic_rr = "Classic Round-Robin Debate"
     summarized = "Summarized Discussion"
-    devils_advocate = "Devil's Advocate Debate"
+    devils_advocate = "Penalized Turn-Limit Debates"
 
 
 class Settings(Enum):
     FINAL_DECISION = "on"
-    ALL_CONVO = "off"
+    ALL_CONVO = "off"  # Summarized View
     SHOW_HARMFULNESS = "on"
     HIDE_HARMFULNESS = "off"
