@@ -71,6 +71,7 @@ class Formatting(Enum):
     HARMLESS_RESPONSE = (
         "<span class='font-bold text-green-500'>Harmless Response</span>"
     )
+    CONVERSATION = "-- {prompt} --<br /><br />{conversation}"
 
 
 class SystemPrompts(Enum):

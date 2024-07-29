@@ -4,7 +4,8 @@ from datetime import datetime
 
 import redis
 
-from constants import Defaults
+from constants import Defaults, Formatting
+from utils.prompt import Prompt
 
 
 class Database(object):
@@ -31,12 +32,16 @@ class Database(object):
 
     def write_conversation_to_db(self, prompt: str, conversation: str):
         key = Database.generate_uuid()
+        prompt_prefix_removed = prompt[7:]  # remove prefix 'Topic: '
         return self._redis.hset(
             key,
             mapping={
                 "key": key,
-                "prompt": prompt,
-                "conversation": conversation,
+                "prompt": prompt_prefix_removed,  # full prompt
+                "truncated_prompt": Prompt.truncate_prompt(prompt_prefix_removed),
+                "conversation": Formatting.CONVERSATION.value.format(
+                    prompt=prompt, conversation=conversation
+                ),
                 "timestamp": Database.format_timestamp(time.time()),
             },
         )

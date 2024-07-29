@@ -194,7 +194,7 @@ class Orchestrator:
                 conversation_chunks.append(SystemPrompts.CONSENSUS_REACHED.value)
                 conversation_chunks_str: str = "".join(conversation_chunks)
                 self._persistence.database.write_conversation_to_db(
-                    prompt=msgs[1]["content"][7:], conversation=conversation_chunks_str
+                    prompt=msgs[1]["content"], conversation=conversation_chunks_str
                 )
                 return
 
@@ -203,7 +203,7 @@ class Orchestrator:
                 conversation_chunks.append(SystemPrompts.MAX_TURNS_REACHED.value)
                 conversation_chunks_str: str = "".join(conversation_chunks)
                 self._persistence.database.write_conversation_to_db(
-                    prompt=msgs[1]["content"][7:], conversation=conversation_chunks_str
+                    prompt=msgs[1]["content"], conversation=conversation_chunks_str
                 )
                 return
 
