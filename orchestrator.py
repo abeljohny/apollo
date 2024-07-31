@@ -6,6 +6,7 @@ from config import Config
 from constants import (
     AgentBehaviors,
     ConversationalMarkers,
+    EscapeSequences,
     Formatting,
     Settings,
     SystemParams,
@@ -219,12 +220,18 @@ class Orchestrator:
                     using_model=self._agents[0].underlying_model.name(),
                     context=[self._file],
                 )
-                yield f"data:{Formatting.RAG.value.format(data=''.join(rag_response))}\n\n"
+                rag_response_str = (
+                    "".join(rag_response)
+                    .strip()
+                    .replace(EscapeSequences.NEWLINE.value, Formatting.LINE_BREAK.value)
+                )
+
+                yield f"data: {Formatting.RAG.value.format(data=rag_response_str)}\n\n"
                 yield f"data: {Formatting.LINE_BREAK.value * 3}\n\n"
                 conversation_chunks.append(
-                    {Formatting.RAG.value.format(data="".join(rag_response))}
+                    Formatting.RAG.value.format(data=rag_response_str)
                 )
-                conversation_chunks.append({Formatting.LINE_BREAK.value * 3})
+                conversation_chunks.append(Formatting.LINE_BREAK.value * 3)
                 msgs.append(
                     {
                         "role": "user",

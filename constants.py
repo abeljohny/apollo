@@ -13,6 +13,10 @@ class SupportedFileTypes(Enum):
     ZIP = ".zip"
 
 
+class EscapeSequences(Enum):
+    NEWLINE = "\n"
+
+
 class ConversationalMarkers(Enum):
     CONSENSUS_REACHED = "{consensus-reached}"
     RAG_QUERY = "{query:"
