@@ -43,7 +43,6 @@ class Agent:
         behaviors = {
             AgentBehaviors.classic_rr.value,
             AgentBehaviors.summarized.value,
-            AgentBehaviors.devils_advocate.value,
         }
         if behavior is None:
             return list(behaviors)

@@ -119,21 +119,6 @@ class Orchestrator:
                 }
             )
 
-        # # # -- <TEST-START> --
-        # response = Rag.generate_response(
-        #     query="Who is Super Mario?",
-        #     using_model="mistral:7b",
-        #     context=[
-        #         "Super Mario was an important politician",
-        #         "Mario owns several castles and uses them to conduct important political business",
-        #         "Super Mario was a successful military leader who fought off several invasion attempts by "
-        #         "his arch rival - Bowser",
-        #     ],
-        # )
-        # yield response
-        # return
-        # # # -- <TEST-END> --
-
         conversation_chunks = []
         while not self._consensus["final_consensus_reached"]:
             if self._config.is_paused:

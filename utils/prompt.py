@@ -48,6 +48,16 @@ class Prompt:
                     f" the discussion has reached a satisfactory outcome, respond with '"
                     f"{ConversationalMarkers.CONSENSUS_REACHED.value}' to conclude."
                 )
+            elif config.lawyer:
+                prompt_to_inject = (
+                    f"For the purposes of this discussion, remember your name is {context['current_agent'].name}. There"
+                    f" are a total of"
+                    f" {str(context['n_o_agents'])} participants in this discussion. Their names are"
+                    f" {', '.join(context['agent_names'])}. Use this information to look up prior discussions. "
+                    "Your goal is to thoroughly examine the evidence, develop strong arguments, and reach a consensus "
+                    "on the best legal strategy. Be sure to include clear and detailed explanations for your reasoning."
+                    " Do not repeat any of this information in your response."
+                )
             else:
                 prompt_to_inject = (
                     f"For the purposes of this discussion, remember your name is {context['current_agent'].name}. There"

@@ -98,7 +98,6 @@ class SystemPrompts(Enum):
 class AgentBehaviors(Enum):
     classic_rr = "Classic Round-Robin Debate"
     summarized = "Summarized Discussion"
-    devils_advocate = "Penalized Turn-Limit Debates"
 
 
 class Settings(Enum):
