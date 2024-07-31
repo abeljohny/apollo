@@ -101,12 +101,14 @@ def settings():
         agent_behavior = request.form.get(ElementNames.AGENT_BEHAVIOR.value)
         view = request.form.get(ElementNames.VIEW_TOGGLE.value)
         bias = request.form.get(ElementNames.BIAS_TOGGLE.value)
+        lawyer = request.form.get(ElementNames.LAWYER_TOGGLE.value)
         config.set_system_prompt(sysprompt)
         config.set_max_turns(int(max_n_o_turns))
         config.set_agents(selected_agents)
         config.set_agent_behavior(agent_behavior)
         config.set_view(view)
         config.set_bias(bias)
+        config.set_lawyer_mode(lawyer)
 
     return render_template(
         Templates.SETTINGS.value,
@@ -116,6 +118,7 @@ def settings():
         max_turns=config.max_n_o_turns,
         view=config.view,
         bias=config.bias,
+        lawyer=config.lawyer,
         default_models=config.selected_agents,
     )
 

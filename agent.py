@@ -22,6 +22,10 @@ class Agent:
         have unique names."""
         return self._model.name().split(":")[0].title() + self._model_seed
 
+    @property
+    def underlying_model(self) -> ModelABC:
+        return self._model
+
     @staticmethod
     def _instantiate_model(llm_name: str) -> ModelABC:
         match llm_name:

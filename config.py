@@ -5,20 +5,26 @@ from utils.file_manager import FileManager
 class Config(object):
     _quiet: bool = False
     _agents: list[str] = []
-    _sysprompt: str = None
+    _sysprompt: str | None = None
+    _all_sysprompts = {"default": None, "lawyer": None}
     _custom_sysprompt: bool = False
     _DEFAULT_SYSPROMPT: str = None
 
     def __init__(self):
         """Loads configuration files so that they can be made accessible as properties"""
-        self._sysprompt = _DEFAULT_SYSPROMPT = FileManager.read_file(
+        self._all_sysprompts["default"] = FileManager.read_file(
             FilePaths.SYSTEM_PROMPT.value
         )
+        self._all_sysprompts["lawyer"] = FileManager.read_file(
+            FilePaths.SYSTEM_PROMPT_COURT.value
+        )
+        self._sysprompt = _DEFAULT_SYSPROMPT = self._all_sysprompts["default"]
         self._max_n_o_turns = Defaults.MAX_N_O_TURNS.value
         self._agents = Defaults.AGENTS.value
         self._agent_behavior = None
-        self._view = "off"
-        self._bias = "off"
+        self._view = Settings.ALL_CONVO.value
+        self._bias = Settings.HIDE_HARMFULNESS.value
+        self._lawyer = Settings.LAWYER_OFF.value
         self._discussion_topic = ""
         self._filecontent = None
         self._filename = None
@@ -48,6 +54,10 @@ class Config(object):
     @property
     def bias(self) -> str:
         return self._bias
+
+    @property
+    def lawyer(self) -> str:
+        return self._lawyer
 
     @property
     def discussion_topic(self) -> str:
@@ -99,6 +109,14 @@ class Config(object):
             self._bias = Settings.SHOW_HARMFULNESS.value
         else:
             self._bias = Settings.HIDE_HARMFULNESS.value
+
+    def set_lawyer_mode(self, lawyer: str):
+        if lawyer == "on":
+            self._lawyer = Settings.LAWYER_ON.value
+            self._sysprompt = self._all_sysprompts["lawyer"]
+        else:
+            self._lawyer = Settings.LAWYER_OFF.value
+            self._sysprompt = self._all_sysprompts["default"]
 
     def set_discussion_topic(self, topic: str):
         self._discussion_topic = topic

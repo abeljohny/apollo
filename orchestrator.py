@@ -1,3 +1,4 @@
+import re
 from collections import Counter
 
 from agent import Agent
@@ -13,6 +14,7 @@ from constants import (
 from utils.file_manager import FileManager
 from utils.harmfulness_classifier import HarmfulnessClassifier
 from utils.persistence import Persistence
+from utils.rag import Rag
 
 
 class Orchestrator:
@@ -20,7 +22,7 @@ class Orchestrator:
 
     def __init__(self, topic: str, file, config: Config, persistence: Persistence):
         self._topic: str = topic
-        self._file: str = FileManager.parse_file(file)
+        self._file: str | list[str] = FileManager.parse_file(file)
         self._config: Config = config
         self._persistence: Persistence = persistence
 
@@ -62,11 +64,23 @@ class Orchestrator:
         }
 
     @staticmethod
-    def consensus_detected(conversation_piece: str) -> bool:
-        """Checks if consensus is reached on a bit of conversation"""
-        return (
-            ConversationalMarkers.CONSENSUS_REACHED.value in conversation_piece.lower()
-        )
+    def conversational_marker_found(marker: str, conversation_piece: str) -> bool:
+        match marker:
+            case ConversationalMarkers.CONSENSUS_REACHED.value:
+                return (  # Checks if consensus is reached on a bit of conversation
+                    ConversationalMarkers.CONSENSUS_REACHED.value
+                    in conversation_piece.lower()
+                )
+            case ConversationalMarkers.RAG_QUERY.value:
+                return (  # Checks if LLM is requesting for a query to RAG
+                    ConversationalMarkers.RAG_QUERY.value in conversation_piece.lower()
+                )
+
+    @staticmethod
+    def extract_rag_query(query: str):
+        match = re.search(r"{query: (.*?)}", query)
+        if match:
+            return match.group(1)
 
     def _loop_detected(self, val: str) -> bool:
         self._conversation_counter[val] += 1
@@ -90,23 +104,34 @@ class Orchestrator:
         agent_idx: int = 0
         msgs = [
             {"role": "system", "content": f"{self._config.system_prompt}"},
+            {
+                "role": "user",
+                "content": f"Topic: {self._topic}",
+            },
         ]
 
         if self._file is not None:
             msgs.append(
                 {
                     "role": "user",
-                    "content": f"Topic: {self._topic}",
-                }
-            )
-            msgs.append(
-                {
-                    "role": "user",
                     "content": f"Attached File: {self._file.strip()[:1000]}",
                 }
             )
-        else:
-            msgs.append({"role": "user", "content": f"Topic: {self._topic}"})
+
+        # # # -- <TEST-START> --
+        # response = Rag.generate_response(
+        #     query="Who is Super Mario?",
+        #     using_model="mistral:7b",
+        #     context=[
+        #         "Super Mario was an important politician",
+        #         "Mario owns several castles and uses them to conduct important political business",
+        #         "Super Mario was a successful military leader who fought off several invasion attempts by "
+        #         "his arch rival - Bowser",
+        #     ],
+        # )
+        # yield response
+        # return
+        # # # -- <TEST-END> --
 
         conversation_chunks = []
         while not self._consensus["final_consensus_reached"]:
@@ -177,9 +202,35 @@ class Orchestrator:
             ):
                 msgs = [msgs[0], msgs[-1]]
 
-            if self.consensus_detected(agent.last_response):
+            if self.conversational_marker_found(
+                marker=ConversationalMarkers.CONSENSUS_REACHED.value,
+                conversation_piece=agent.last_response,
+            ):
                 self._consensus["intermediate_consensus_reached"] = True
                 self._consensus["agents_in_consensus"].add(agent.name)
+
+            if self.conversational_marker_found(
+                marker=ConversationalMarkers.RAG_QUERY.value,
+                conversation_piece=agent.last_response,
+            ):
+                llm_query = self.extract_rag_query(agent.last_response)
+                rag_response = Rag.generate_response(
+                    query=llm_query,
+                    using_model=self._agents[0].underlying_model.name(),
+                    context=[self._file],
+                )
+                yield f"data:{Formatting.RAG.value.format(data=''.join(rag_response))}\n\n"
+                yield f"data: {Formatting.LINE_BREAK.value * 3}\n\n"
+                conversation_chunks.append(
+                    {Formatting.RAG.value.format(data="".join(rag_response))}
+                )
+                conversation_chunks.append({Formatting.LINE_BREAK.value * 3})
+                msgs.append(
+                    {
+                        "role": "user",
+                        "content": f"Answer to '{llm_query}': {rag_response}",
+                    }
+                )
 
             if (
                 len(context["consensus"]["agents_in_consensus"])

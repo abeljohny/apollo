@@ -5,14 +5,17 @@ class FilePaths(Enum):
     """File Paths to configuration files"""
 
     SYSTEM_PROMPT = "config/sysprompt.txt"
+    SYSTEM_PROMPT_COURT = "config/sysprompt_lawyer.txt"
 
 
 class SupportedFileTypes(Enum):
     PDF = ".pdf"
+    ZIP = ".zip"
 
 
 class ConversationalMarkers(Enum):
     CONSENSUS_REACHED = "{consensus-reached}"
+    RAG_QUERY = "{query:"
 
 
 class ModelNames(Enum):
@@ -53,6 +56,7 @@ class ElementNames(Enum):
     AGENT_BEHAVIOR = "agentBehavior"
     VIEW_TOGGLE = "viewToggle"
     BIAS_TOGGLE = "biasToggle"
+    LAWYER_TOGGLE = "lawyerToggle"
 
 
 class SystemParams(Enum):
@@ -72,6 +76,7 @@ class Formatting(Enum):
         "<span class='font-bold text-green-500'>Harmless Response</span>"
     )
     CONVERSATION = "-- {prompt} --<br /><br />{conversation}"
+    RAG = "<span class='font-bold text-indigo-600'>RAG System: {data}</span>"
 
 
 class SystemPrompts(Enum):
@@ -97,3 +102,5 @@ class Settings(Enum):
     ALL_CONVO = "off"  # Summarized View
     SHOW_HARMFULNESS = "on"
     HIDE_HARMFULNESS = "off"
+    LAWYER_ON = "on"
+    LAWYER_OFF = "off"
