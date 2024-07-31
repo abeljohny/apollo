@@ -1,4 +1,4 @@
-from constants import AgentBehaviors, ConversationalMarkers
+from constants import AgentBehaviors, ConversationalMarkers, Settings
 
 
 class Prompt:
@@ -48,9 +48,10 @@ class Prompt:
                     f" the discussion has reached a satisfactory outcome, respond with '"
                     f"{ConversationalMarkers.CONSENSUS_REACHED.value}' to conclude."
                 )
-            elif config.lawyer:
+            elif config.lawyer == Settings.LAWYER_ON.value:
                 prompt_to_inject = (
-                    f"For the purposes of this discussion, remember your name is {context['current_agent'].name}. There"
+                    f"For the purposes of this discussion, remember your name is {context['current_agent'].name}. Do "
+                    f"not repeat your name in your response. There"
                     f" are a total of"
                     f" {str(context['n_o_agents'])} participants in this discussion. Their names are"
                     f" {', '.join(context['agent_names'])}. Use this information to look up prior discussions. "
@@ -60,7 +61,8 @@ class Prompt:
                 )
             else:
                 prompt_to_inject = (
-                    f"For the purposes of this discussion, remember your name is {context['current_agent'].name}. There"
+                    f"For the purposes of this discussion, remember your name is {context['current_agent'].name}. Do "
+                    f"not repeat your name in your response. There"
                     f" are a total of"
                     f" {str(context['n_o_agents'])} participants in this discussion. Their names are"
                     f" {', '.join(context['agent_names'])}. Use this information to look up prior discussions. "
