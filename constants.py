@@ -37,7 +37,7 @@ class ModelNames(Enum):
 class Defaults(Enum):
     AGENTS: list[str] = [
         ModelNames.LLAMA_INSTRUCT.value,
-        ModelNames.MISTRAL_INSTRUCT.value,
+        ModelNames.GEMMA_INSTRUCT.value,
     ]
     MAX_N_O_TURNS = 6
     DATABASE_HOST = "localhost"
