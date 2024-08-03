@@ -1,17 +1,16 @@
 import ollama
 
-from constants import ModelNames
 from models.modelABC import ModelABC
 
 
-class Qwen(ModelABC):
-    def __init__(self):
-        super().__init__()
+class Default(ModelABC):
+    def __init__(self, llm_name: str):
+        super().__init__(llm_name)
         self._response = ""
 
-    @staticmethod
-    def name() -> str:
-        return ModelNames.QWEN.value
+    @property
+    def name(self) -> str:
+        return super().name
 
     @property
     def last_response(self) -> str:
@@ -19,7 +18,7 @@ class Qwen(ModelABC):
 
     def chat(self, context) -> str:
         stream = ollama.chat(
-            model=Qwen.name(),
+            model=self.name,
             messages=context,
             stream=True,
         )

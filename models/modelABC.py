@@ -2,13 +2,12 @@ from abc import ABC, abstractmethod
 
 
 class ModelABC(ABC):
-    def __init__(self):
-        pass
+    def __init__(self, llm_name: str):
+        self._name = llm_name
 
-    @staticmethod
-    @abstractmethod
-    def name() -> str:
-        pass
+    @property
+    def name(self) -> str:
+        return self._name
 
     @property
     @abstractmethod

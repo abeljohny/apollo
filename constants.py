@@ -25,14 +25,20 @@ class ConversationalMarkers(Enum):
 class ModelNames(Enum):
     """Supported LLMs"""
 
+    LLAMA_INSTRUCT = "llama3.1:8b-instruct-q8_0"
     LLAMA = "llama3.1:latest"
-    GEMMA = "gemma2:latest"
+    MISTRAL_INSTRUCT = "mistral:7b-instruct"
     MISTRAL = "mistral:7b"
+    GEMMA_INSTRUCT = "gemma2:9b-instruct-q8_0"
+    GEMMA = "gemma2:latest"
     QWEN = "qwen2:latest"
 
 
 class Defaults(Enum):
-    AGENTS: list[str] = [ModelNames.LLAMA.value, ModelNames.MISTRAL.value]
+    AGENTS: list[str] = [
+        ModelNames.LLAMA_INSTRUCT.value,
+        ModelNames.MISTRAL_INSTRUCT.value,
+    ]
     MAX_N_O_TURNS = 6
     DATABASE_HOST = "localhost"
     DATABASE_PORT = 6379
