@@ -32,13 +32,12 @@ class Database(object):
 
     def write_conversation_to_db(self, prompt: str, conversation: str):
         key = Database.generate_uuid()
-        prompt_prefix_removed = prompt[7:]  # remove prefix 'Topic: '
         return self._redis.hset(
             key,
             mapping={
                 "key": key,
-                "prompt": prompt_prefix_removed,  # full prompt
-                "truncated_prompt": Prompt.truncate_prompt(prompt_prefix_removed),
+                "prompt": prompt,
+                "truncated_prompt": Prompt.truncate_prompt(prompt),
                 "conversation": Formatting.CONVERSATION.value.format(
                     prompt=prompt, conversation=conversation
                 ),

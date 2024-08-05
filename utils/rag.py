@@ -6,6 +6,8 @@ from haystack.components.retrievers.in_memory import InMemoryBM25Retriever
 from haystack.document_stores.in_memory import InMemoryDocumentStore
 from haystack_integrations.components.generators.ollama import OllamaGenerator
 
+from constants import ModelNames
+
 
 class Rag(object):
     def __init__(self):
@@ -38,7 +40,8 @@ class Rag(object):
         pipeline.add_component(
             "llm",
             OllamaGenerator(
-                model=using_model, url="http://localhost:11434/api/generate"
+                model=ModelNames.GEMMA_INSTRUCT.value,
+                url="http://localhost:11434/api/generate",
             ),
         )
         pipeline.connect("retriever", "prompt_builder.documents")

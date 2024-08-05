@@ -111,14 +111,6 @@ class Orchestrator:
             },
         ]
 
-        if self._file is not None:
-            msgs.append(
-                {
-                    "role": "user",
-                    "content": f"Attached File: {self._file.strip()[:1000]}",
-                }
-            )
-
         conversation_chunks = []
         while not self._consensus["final_consensus_reached"]:
             if self._config.is_paused:
@@ -199,36 +191,60 @@ class Orchestrator:
                 marker=ConversationalMarkers.RAG_QUERY.value,
                 conversation_piece=agent.last_response,
             ):
-                llm_query = self.extract_rag_query(agent.last_response)
-                rag_response = Rag.generate_response(
-                    query=llm_query,
-                    using_model=self._agents[0].underlying_model.name(),
-                    context=[self._file],
-                )
-                rag_response_str = (
-                    "".join(rag_response)
-                    .strip()
-                    .replace(EscapeSequences.NEWLINE.value, Formatting.LINE_BREAK.value)
-                )
+                rag_response_str = ""
+                if not self._file:
+                    rag_response_str = (
+                        "User has not uploaded a file. RAG query ignored!"
+                    )
+                    yield f"data: {Formatting.RAG.value.format(data=rag_response_str)}\n\n"
+                    yield f"data: {Formatting.LINE_BREAK.value * 3}\n\n"
+                    conversation_chunks.append(
+                        Formatting.RAG.value.format(data=rag_response_str)
+                    )
+                    conversation_chunks.append(Formatting.LINE_BREAK.value * 3)
+                    msgs.append(
+                        {
+                            "role": "user",
+                            "content": f"{rag_response_str}",
+                        }
+                    )
+                else:
+                    llm_query = self.extract_rag_query(agent.last_response)
+                    rag_response = Rag.generate_response(
+                        query=llm_query,
+                        using_model=self._agents[0].underlying_model.name,
+                        context=[self._file],
+                    )
+                    rag_response_str = (
+                        "".join(rag_response)
+                        .strip()
+                        .replace(
+                            EscapeSequences.NEWLINE.value, Formatting.LINE_BREAK.value
+                        )
+                    )
 
-                yield f"data: {Formatting.RAG.value.format(data=rag_response_str)}\n\n"
-                yield f"data: {Formatting.LINE_BREAK.value * 3}\n\n"
-                conversation_chunks.append(
-                    Formatting.RAG.value.format(data=rag_response_str)
-                )
-                conversation_chunks.append(Formatting.LINE_BREAK.value * 3)
-                msgs.append(
-                    {
-                        "role": "user",
-                        "content": f"Answer to '{llm_query}': {rag_response}",
-                    }
-                )
+                    yield f"data: {Formatting.RAG.value.format(data=rag_response_str)}\n\n"
+                    yield f"data: {Formatting.LINE_BREAK.value * 3}\n\n"
+
+                    conversation_chunks.append(
+                        Formatting.RAG.value.format(data=rag_response_str)
+                    )
+                    conversation_chunks.append(Formatting.LINE_BREAK.value * 3)
+                    msgs.append(
+                        {
+                            "role": "user",
+                            "content": f"Answer to '{llm_query}': {rag_response}",
+                        }
+                    )
 
             if (
                 len(context["consensus"]["agents_in_consensus"])
                 == context["n_o_agents"]
             ):
-                self._consensus["final_consensus_reached"] = True
+                (
+                    self._consensus["final_consensus_reached"],
+                    self._consensus["intermediate_consensus_reached"],
+                ) = (True, False)
                 if (
                     self._config.agent_behavior == AgentBehaviors.summarized.value
                     and self._config.view == Settings.FINAL_DECISION.value
@@ -238,18 +254,18 @@ class Orchestrator:
                 conversation_chunks.append(SystemPrompts.CONSENSUS_REACHED.value)
                 conversation_chunks_str: str = "".join(conversation_chunks)
                 self._persistence.database.write_conversation_to_db(
-                    prompt=msgs[1]["content"], conversation=conversation_chunks_str
+                    prompt=self._topic, conversation=conversation_chunks_str
                 )
-                return
+                # return
 
             if self._turn == self._config.max_n_o_turns:
                 yield f"data:{SystemPrompts.MAX_TURNS_REACHED.value}\n\n"
                 conversation_chunks.append(SystemPrompts.MAX_TURNS_REACHED.value)
                 conversation_chunks_str: str = "".join(conversation_chunks)
                 self._persistence.database.write_conversation_to_db(
-                    prompt=msgs[1]["content"], conversation=conversation_chunks_str
+                    prompt=self._topic, conversation=conversation_chunks_str
                 )
-                return
+                # return
 
             if self._loop_detected(response):
                 self._in_loop = True
