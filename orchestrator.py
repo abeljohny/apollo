@@ -244,7 +244,10 @@ class Orchestrator:
                 (
                     self._consensus["final_consensus_reached"],
                     self._consensus["intermediate_consensus_reached"],
-                ) = (True, False)
+                ) = (
+                    True,
+                    False,
+                )  # toggle final and intermediate consensus bools
                 if (
                     self._config.agent_behavior == AgentBehaviors.summarized.value
                     and self._config.view == Settings.FINAL_DECISION.value
@@ -256,7 +259,6 @@ class Orchestrator:
                 self._persistence.database.write_conversation_to_db(
                     prompt=self._topic, conversation=conversation_chunks_str
                 )
-                # return
 
             if self._turn == self._config.max_n_o_turns:
                 yield f"data:{SystemPrompts.MAX_TURNS_REACHED.value}\n\n"
@@ -265,7 +267,6 @@ class Orchestrator:
                 self._persistence.database.write_conversation_to_db(
                     prompt=self._topic, conversation=conversation_chunks_str
                 )
-                # return
 
             if self._loop_detected(response):
                 self._in_loop = True
