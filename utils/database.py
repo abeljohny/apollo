@@ -13,8 +13,8 @@ class Database(object):
 
     def __init__(self):
         self._redis = redis.Redis(
-            host=Defaults.DATABASE_HOST.value,
-            port=Defaults.DATABASE_PORT.value,
+            host=Defaults.DATABASE.value["host"],
+            port=Defaults.DATABASE.value["port"],
             decode_responses=True,
         )
 

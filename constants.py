@@ -36,12 +36,11 @@ class ModelNames(Enum):
 
 class Defaults(Enum):
     AGENTS: list[str] = [
-        ModelNames.LLAMA_INSTRUCT.value,
         ModelNames.GEMMA_INSTRUCT.value,
+        ModelNames.LLAMA_INSTRUCT.value,
     ]
     MAX_N_O_TURNS = 6
-    DATABASE_HOST = "localhost"
-    DATABASE_PORT = 6379
+    DATABASE = {"host": "localhost", "port": 6379}
 
 
 class Templates(Enum):
