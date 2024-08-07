@@ -247,7 +247,7 @@ class Orchestrator:
                 ) = (
                     True,
                     False,
-                )  # toggle final and intermediate consensus bools
+                )  # toggle final and intermediate consensus bools (as only one can be active at a time)
                 if (
                     self._config.agent_behavior == AgentBehaviors.summarized.value
                     and self._config.view == Settings.FINAL_DECISION.value
