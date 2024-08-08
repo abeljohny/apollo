@@ -23,9 +23,9 @@ class Prompt:
             )
         elif context["consensus"]["final_consensus_reached"]:
             prompt_to_inject = (
-                f"Please summarize all discussions that have taken place before consensus was reached. "
+                f"Please summarize all discussions that have taken place up to this point. "
                 f"Include key points, main topics discussed, and any new insights or conclusions "
-                f"drawn since reaching the consensus. Your summary should be clear and concise."
+                f"drawn. Your summary should be clear and concise."
             )
         else:
             if context["in_loop"]:

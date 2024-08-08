@@ -197,11 +197,11 @@ class Orchestrator:
                         "User has not uploaded a file. RAG query ignored!"
                     )
                     yield f"data: {Formatting.RAG.value.format(data=rag_response_str)}\n\n"
-                    yield f"data: {Formatting.LINE_BREAK.value * 2}\n\n"
+                    yield f"data: {Formatting.LINE_BREAK.value * 3}\n\n"
                     conversation_chunks.append(
                         Formatting.RAG.value.format(data=rag_response_str)
                     )
-                    conversation_chunks.append(Formatting.LINE_BREAK.value * 2)
+                    conversation_chunks.append(Formatting.LINE_BREAK.value * 3)
                     msgs.append(
                         {
                             "role": "user",
