@@ -78,7 +78,7 @@ class Orchestrator:
                 )
 
     @staticmethod
-    def extract_rag_query(query: str):
+    def extract_rag_query(query: str) -> str:
         match = re.search(r"{query: (.*?)}", query)
         if match:
             return match.group(1)

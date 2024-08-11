@@ -30,12 +30,12 @@ class FileManager(object):
                 return file.read()
 
     @staticmethod
-    def file_extension(filename):
+    def file_extension(filename) -> str:
         _, file_extension = os.path.splitext(filename)
         return file_extension
 
     @staticmethod
-    def remove_non_printable_chars(s):
+    def remove_non_printable_chars(s: str):
         return "".join(c for c in s if c.isprintable())
 
     @staticmethod
