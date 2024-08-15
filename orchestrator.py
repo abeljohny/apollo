@@ -253,6 +253,7 @@ class Orchestrator:
                     and self._config.view == Settings.FINAL_DECISION.value
                 ):
                     yield from agent.chat(self._context, msgs)
+                    conversation_chunks.append(agent.name + ": " + agent.last_response)
                 yield f"data:{SystemPrompts.CONSENSUS_REACHED.value}\n\n"
                 conversation_chunks.append(SystemPrompts.CONSENSUS_REACHED.value)
                 conversation_chunks_str: str = "".join(conversation_chunks)
