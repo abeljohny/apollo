@@ -265,6 +265,7 @@ class Orchestrator:
                 yield f"data:{SystemPrompts.MAX_TURNS_REACHED.value}\n\n"
                 conversation_chunks.append(SystemPrompts.MAX_TURNS_REACHED.value)
                 conversation_chunks_str: str = "".join(conversation_chunks)
+                self._consensus["final_consensus_reached"] = True
                 self._persistence.database.write_conversation_to_db(
                     prompt=self._topic, conversation=conversation_chunks_str
                 )
