@@ -101,7 +101,7 @@ class Orchestrator:
 
         return False
 
-    def initiate_debate(self):
+    def initiate_discourse(self):
         agent_idx: int = 0
         msgs = [
             {"role": "system", "content": f"{self._config.system_prompt}"},
@@ -261,7 +261,7 @@ class Orchestrator:
                     prompt=self._topic, conversation=conversation_chunks_str
                 )
 
-            if self._turn == self._config.max_n_o_turns:
+            elif self._turn == self._config.max_n_o_turns:
                 yield f"data:{SystemPrompts.MAX_TURNS_REACHED.value}\n\n"
                 conversation_chunks.append(SystemPrompts.MAX_TURNS_REACHED.value)
                 conversation_chunks_str: str = "".join(conversation_chunks)
@@ -270,7 +270,7 @@ class Orchestrator:
                     prompt=self._topic, conversation=conversation_chunks_str
                 )
 
-            if self._loop_detected(response):
+            elif self._loop_detected(response):
                 self._in_loop = True
                 yield f"data:{SystemPrompts.LOOP_DETECTED.value}\n\n"
                 conversation_chunks.append(SystemPrompts.LOOP_DETECTED.value)

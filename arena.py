@@ -20,4 +20,4 @@ class Arena(object):
         return [model["name"] for model in system_models["models"]]
 
     def execute(self):
-        yield from self._orchestrator.initiate_debate()
+        yield from self._orchestrator.initiate_discourse()
