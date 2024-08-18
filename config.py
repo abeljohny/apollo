@@ -3,7 +3,6 @@ from utils.file_manager import FileManager
 
 
 class Config(object):
-    _quiet: bool = False
     _agents: list[str] = []
     _sysprompt: str | None = None
     _all_sysprompts = {"default": None, "lawyer": None}
