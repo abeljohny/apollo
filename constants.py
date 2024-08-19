@@ -101,7 +101,7 @@ class SystemPrompts(Enum):
 
 
 class AgentBehaviors(Enum):
-    classic_rr = "Classic Round-Robin Debate"
+    classic_rr = "Classic Round-Robin Discussion"
     summarized = "Summarized Discussion"
 
 
