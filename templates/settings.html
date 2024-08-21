@@ -398,6 +398,7 @@
 </div>
 
 <script>
+    const min_max_turn_limit = 4
     document.getElementById('incrementButton').addEventListener('click', function () {
         const counter = document.getElementById('turnsCounter');
         counter.value = parseInt(counter.value) + 1;
@@ -405,7 +406,7 @@
 
     document.getElementById('decrementButton').addEventListener('click', function () {
         const counter = document.getElementById('turnsCounter');
-        if (parseInt(counter.value) > 1) {
+        if (parseInt(counter.value) > min_max_turn_limit) {
             counter.value = parseInt(counter.value) - 1;
         }
     });
