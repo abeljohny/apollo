@@ -1,3 +1,6 @@
+import random
+
+from arena import Arena
 from constants import Defaults, FilePaths, Settings, SystemParams
 from utils.file_manager import FileManager
 
@@ -19,7 +22,15 @@ class Config(object):
         )
         self._sysprompt = _DEFAULT_SYSPROMPT = self._all_sysprompts["default"]
         self._max_n_o_turns = Defaults.MAX_N_O_TURNS.value
-        self._agents = Defaults.AGENTS.value
+
+        # default agent setup
+        available_models = Arena.available_system_models()
+        if set(Defaults.AGENTS.value).issubset(available_models):
+            self._agents = Defaults.AGENTS.value
+        elif available_models:
+            self._agents.append(random.choice(available_models))
+            self._agents.append(random.choice(available_models))
+
         self._agent_behavior = None
         self._view = Settings.ALL_CONVO.value
         self._bias = Settings.HIDE_HARMFULNESS.value

@@ -23,8 +23,6 @@ class ConversationalMarkers(Enum):
 
 
 class ModelNames(Enum):
-    """Supported LLMs"""
-
     LLAMA_INSTRUCT = "llama3.1:8b-instruct-q8_0"
     LLAMA = "llama3.1:latest"
     MISTRAL_INSTRUCT = "mistral:7b-instruct"
