@@ -112,7 +112,7 @@ def settings():
 
     return render_template(
         Templates.SETTINGS.value,
-        models=Arena.available_system_models(),
+        models=persistence.available_system_models(),
         behaviors=Agent.agent_behaviors(config.agent_behavior),
         sysprompt=config.system_prompt,
         max_turns=config.max_n_o_turns,

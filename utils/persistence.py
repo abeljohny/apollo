@@ -1,3 +1,5 @@
+import ollama
+
 from utils.database import Database
 from utils.file_manager import FileManager
 
@@ -16,3 +18,9 @@ class Persistence:
     @property
     def database(self):
         return self._db
+
+    @staticmethod
+    def available_system_models():
+        """Returns Ollama models already available in system"""
+        system_models = ollama.list()
+        return [model["name"] for model in system_models["models"]]

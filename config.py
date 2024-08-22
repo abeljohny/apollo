@@ -1,8 +1,8 @@
 import random
 
-from arena import Arena
 from constants import Defaults, FilePaths, Settings, SystemParams
 from utils.file_manager import FileManager
+from utils.persistence import Persistence
 
 
 class Config(object):
@@ -23,8 +23,8 @@ class Config(object):
         self._sysprompt = _DEFAULT_SYSPROMPT = self._all_sysprompts["default"]
         self._max_n_o_turns = Defaults.MAX_N_O_TURNS.value
 
-        # default agent setup
-        available_models = Arena.available_system_models()
+        # default agent selection
+        available_models = Persistence.available_system_models()
         if set(Defaults.AGENTS.value).issubset(available_models):
             self._agents = Defaults.AGENTS.value
         elif available_models:
