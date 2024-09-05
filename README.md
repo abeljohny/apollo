@@ -1,25 +1,8 @@
-# Apollo System
+# Apollo
 
 ## Description
 
 Apollo is an Architecture and oPen-source system for Orchestrating Large Language mOdels (LLMs) for autonomous decision-making.
-
-## Dependencies
-
-Apollo relies on the following external dependencies:
-
-| Dependency | Version |
-|------------|---------|
-| Ollama | v0.3.2 |
-| Flask | v3.0.3 |
-| Jinja2 | v3.1.4 |
-| PyPDF2 | v3.0.1 |
-| PyMuPDF | v1.24.10 |
-| detoxify | v0.5.2 |
-| fitz | v0.0.1.dev2 |
-| haystack-ai | v2.5 |
-| ollama-haystack | v0.0.7 |
-| redis | v5.0.8 |
 
 ## Installation
 
