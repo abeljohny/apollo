@@ -42,13 +42,12 @@ Apollo relies on the following external dependencies:
 
 4. Install Ollama separately following the instructions at [Ollama's official documentation](https://ollama.ai/download).
 
-5. Download the default LLMs used - [llama3.1](https://ollama.com/library/llama3.1) and [gemma2](https://ollama.com/library/gemma2) via Ollama.
-
 6. Install Redis following the instructions at [Redis's official documentation](https://redis.io/download).
 
 ## Configuration
 
-Ensure Redis is running and properly configured.
+1. Ensure Redis is running and properly configured.
+2. Download the default LLMs used - [llama3.1](https://ollama.com/library/llama3.1) and [gemma2](https://ollama.com/library/gemma2) via Ollama if you wish to run Apollo out-of-the-box.
 
 ## Usage
 
