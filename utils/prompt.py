@@ -1,4 +1,4 @@
-from constants import AgentBehaviors, ConversationalMarkers, Settings
+from constants import AgentBehaviors, Settings
 
 
 class Prompt:
@@ -17,9 +17,7 @@ class Prompt:
         if context["consensus"]["intermediate_consensus_reached"]:
             prompt_to_inject = (
                 f"The following participants have reached consensus: "
-                f"{', '.join(context['consensus']['agents_in_consensus'])}. If "
-                f"you agree with this consensus, repond with '{ConversationalMarkers.CONSENSUS_REACHED.value}' to "
-                f"conclude the discussion."
+                f"{', '.join(context['consensus']['agents_in_consensus'])}."
             )
         elif context["consensus"]["final_consensus_reached"]:
             prompt_to_inject = (
@@ -34,8 +32,8 @@ class Prompt:
                     f"conversation. Please provide a fresh perspective or new information on the topic at hand. "
                 )
             elif (
-                config.agent_behavior == AgentBehaviors.summarized.value
-                and context["turn_updated"] is True
+                    config.agent_behavior == AgentBehaviors.summarized.value
+                    and context["turn_updated"] is True
             ):
                 prompt_to_inject = (
                     f"Please summarize all discussions that have taken place up to this point. Include "
@@ -43,10 +41,7 @@ class Prompt:
                 )
             elif context["turn"] == config.min_turn_for_sysinterject:
                 prompt_to_inject = (
-                    f"You have only {config.max_n_o_turns - context['turn']} turn(s) left to reach a "
-                    f"conclusion. If you believe"
-                    f" the discussion has reached a satisfactory outcome, respond with '"
-                    f"{ConversationalMarkers.CONSENSUS_REACHED.value}' to conclude."
+                    f"You have only {config.max_n_o_turns - context['turn']} turn(s) left to reach a conclusion."
                 )
             elif config.lawyer == Settings.LAWYER_ON.value:
                 prompt_to_inject = (

@@ -18,7 +18,6 @@ class EscapeSequences(Enum):
 
 
 class ConversationalMarkers(Enum):
-    CONSENSUS_REACHED = "{consensus-reached}"
     RAG_QUERY = "{query:"
 
 
@@ -110,3 +109,9 @@ class Settings(Enum):
     HIDE_HARMFULNESS = "off"
     LAWYER_ON = "on"
     LAWYER_OFF = "off"
+
+
+class Consensus(Enum):
+    FULL_CONSENSUS = 1
+    MODERATE_CONSENSUS = 0.5
+    NO_CONSENSUS = 0

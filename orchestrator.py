@@ -3,16 +3,10 @@ from collections import Counter
 
 from agent import Agent
 from config import Config
-from constants import (
-    AgentBehaviors,
-    ConversationalMarkers,
-    EscapeSequences,
-    Formatting,
-    Settings,
-    SystemParams,
-    SystemPrompts,
-)
+from constants import (AgentBehaviors, Consensus, ConversationalMarkers, EscapeSequences, Formatting, Settings,
+                       SystemParams, SystemPrompts)
 from utils.file_manager import FileManager
+from utils.fuzzy_consensus import FuzzyConsensus
 from utils.harmfulness_classifier import HarmfulnessClassifier
 from utils.persistence import Persistence
 from utils.rag import Rag
@@ -26,6 +20,7 @@ class Orchestrator:
         self._file: str | list[str] = FileManager.parse_file(file)
         self._config: Config = config
         self._persistence: Persistence = persistence
+        self._consensus_detector = FuzzyConsensus()
 
         # instantiate Agents
         seen_models = {}
@@ -67,14 +62,9 @@ class Orchestrator:
     @staticmethod
     def conversational_marker_found(marker: str, conversation_piece: str) -> bool:
         match marker:
-            case ConversationalMarkers.CONSENSUS_REACHED.value:
-                return (  # Checks if consensus is reached on a bit of conversation
-                    ConversationalMarkers.CONSENSUS_REACHED.value
-                    in conversation_piece.lower()
-                )
             case ConversationalMarkers.RAG_QUERY.value:
                 return (  # Checks if LLM is requesting for a query to RAG
-                    ConversationalMarkers.RAG_QUERY.value in conversation_piece.lower()
+                        ConversationalMarkers.RAG_QUERY.value in conversation_piece.lower()
                 )
 
     @staticmethod
@@ -87,15 +77,15 @@ class Orchestrator:
         self._conversation_counter[val] += 1
 
         if (
-            self._conversation_counter.most_common(1)[0][1]
-            > SystemParams.MIN_LOOP_FOR_SYSINTERJECT.value
+                self._conversation_counter.most_common(1)[0][1]
+                > SystemParams.MIN_LOOP_FOR_SYSINTERJECT.value
         ):
             self._conversation_counter = Counter()
             return True
 
         if (
-            len(self._conversation_counter)
-            == SystemParams.MAX_LOOKBACK_FOR_LOOP_DETECTION.value
+                len(self._conversation_counter)
+                == SystemParams.MAX_LOOKBACK_FOR_LOOP_DETECTION.value
         ):
             self._conversation_counter = Counter()
 
@@ -121,13 +111,13 @@ class Orchestrator:
             if selected_agent_idx == 0:
                 self._turn["turn"] += 1
                 if (
-                    self._turn["turn"] > 0
+                        self._turn["turn"] > 0
                 ):  # ignore for the very first turn as we don't have enough context
                     self._turn["turn_updated"] = True
             else:
                 if (
-                    self._turn["turn_updated"]
-                    and self._config.agent_behavior == AgentBehaviors.summarized.value
+                        self._turn["turn_updated"]
+                        and self._config.agent_behavior == AgentBehaviors.summarized.value
                 ):  # if prior turn was a new turn and Agents were asked to Summarize responses
                     agent_idx -= 1
                     selected_agent_idx = agent_idx % len(self._agents)
@@ -163,7 +153,7 @@ class Orchestrator:
                 )
 
                 for _ in agent.chat(
-                    context, msgs
+                        context, msgs
                 ):  # Agent's response is discarded for display if view is ON
                     pass
 
@@ -175,21 +165,20 @@ class Orchestrator:
             )
 
             if (
-                self._config.agent_behavior == AgentBehaviors.summarized.value
-                and self._turn["turn_updated"] is True
+                    self._config.agent_behavior == AgentBehaviors.summarized.value
+                    and self._turn["turn_updated"] is True
             ):
                 msgs = [msgs[0], msgs[-1]]
 
-            if self.conversational_marker_found(
-                marker=ConversationalMarkers.CONSENSUS_REACHED.value,
-                conversation_piece=agent.last_response,
-            ):
+            if self._consensus_detector.extract_input_vars_and_calculate(
+                    response
+            ) == Consensus.FULL_CONSENSUS.value and self._turn["turn"] > 0:
                 self._consensus["intermediate_consensus_reached"] = True
                 self._consensus["agents_in_consensus"].add(agent.name)
 
             if self.conversational_marker_found(
-                marker=ConversationalMarkers.RAG_QUERY.value,
-                conversation_piece=agent.last_response,
+                    marker=ConversationalMarkers.RAG_QUERY.value,
+                    conversation_piece=agent.last_response,
             ):
                 rag_response_str = ""
                 if not self._file:
@@ -238,8 +227,8 @@ class Orchestrator:
                     )
 
             if (
-                len(context["consensus"]["agents_in_consensus"])
-                == context["n_o_agents"]
+                    len(context["consensus"]["agents_in_consensus"])
+                    == context["n_o_agents"]
             ):
                 (
                     self._consensus["final_consensus_reached"],
@@ -249,8 +238,8 @@ class Orchestrator:
                     False,
                 )  # toggle final and intermediate consensus bools (as only one can be active at a time)
                 if (
-                    self._config.agent_behavior == AgentBehaviors.summarized.value
-                    and self._config.view == Settings.FINAL_DECISION.value
+                        self._config.agent_behavior == AgentBehaviors.summarized.value
+                        and self._config.view == Settings.FINAL_DECISION.value
                 ):
                     yield from agent.chat(self._context, msgs)
                     conversation_chunks.append(agent.name + ": " + agent.last_response)

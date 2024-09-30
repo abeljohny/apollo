@@ -9,3 +9,6 @@ PyPDF2==3.0.1
 fitz==0.0.1.dev2
 detoxify==0.5.2
 Flask==3.0.3
+
+matplotlib==3.9.2
+scikit-fuzzy==0.5.0
