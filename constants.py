@@ -115,6 +115,6 @@ class Settings(Enum):
 
 
 class Consensus(Enum):
-    FULL_CONSENSUS = 1
-    MODERATE_CONSENSUS = 0.5
+    # FULL_CONSENSUS = 1
+    # MODERATE_CONSENSUS = 0.5
     NO_CONSENSUS = 0

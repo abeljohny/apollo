@@ -3,7 +3,7 @@ from collections import Counter
 
 from agent import Agent
 from config import Config
-from constants import (AgentBehaviors, Consensus, ConversationalMarkers, EscapeSequences, Formatting, Settings,
+from constants import (AgentBehaviors, ConversationalMarkers, EscapeSequences, Formatting, Settings,
                        SystemParams, SystemPrompts)
 from utils.file_manager import FileManager
 from utils.fuzzy_consensus import FuzzyConsensus
@@ -172,7 +172,7 @@ class Orchestrator:
 
             if self._consensus_detector.extract_input_vars_and_calculate(
                     response
-            ) == Consensus.FULL_CONSENSUS.value and self._turn["turn"] > 0:
+            ) == self._config.consensus and self._turn["turn"] > 0:
                 self._consensus["intermediate_consensus_reached"] = True
                 self._consensus["agents_in_consensus"].add(agent.name)
             else:  # clear intermediate consensuses if the agent next in discussion does not also agree i.e. the agent
