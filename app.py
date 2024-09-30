@@ -102,6 +102,7 @@ def settings():
         view = request.form.get(ElementNames.VIEW_TOGGLE.value)
         bias = request.form.get(ElementNames.BIAS_TOGGLE.value)
         lawyer = request.form.get(ElementNames.LAWYER_TOGGLE.value)
+        consensus_mode = request.form.get(ElementNames.CONSENSUS_TOGGLE.value)
         config.set_system_prompt(sysprompt)
         config.set_max_turns(int(max_n_o_turns))
         config.set_agents(selected_agents)
@@ -109,6 +110,7 @@ def settings():
         config.set_view(view)
         config.set_bias(bias)
         config.set_lawyer_mode(lawyer)
+        config.set_consensus_mode(consensus_mode)
 
     return render_template(
         Templates.SETTINGS.value,
@@ -119,6 +121,7 @@ def settings():
         view=config.view,
         bias=config.bias,
         lawyer=config.lawyer,
+        mid_consensus=config.consensus,
         default_models=config.selected_agents,
     )
 

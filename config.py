@@ -35,6 +35,7 @@ class Config(object):
         self._view = Settings.ALL_CONVO.value
         self._bias = Settings.HIDE_HARMFULNESS.value
         self._lawyer = Settings.LAWYER_OFF.value
+        self._consensus = Settings.HIGH_CONSENSUS.value
         self._discussion_topic = ""
         self._filecontent = None
         self._filename = None
@@ -68,6 +69,10 @@ class Config(object):
     @property
     def lawyer(self) -> str:
         return self._lawyer
+
+    @property
+    def consensus(self) -> str:
+        return self._consensus
 
     @property
     def discussion_topic(self) -> str:
@@ -128,6 +133,12 @@ class Config(object):
             self._lawyer = Settings.LAWYER_OFF.value
             self._sysprompt = self._all_sysprompts["default"]
 
+    def set_consensus_mode(self, consensus: str):
+        if consensus == "on":
+            self._consensus = Settings.MODERATE_CONSENSUS.value
+        else:
+            self._consensus = Settings.HIGH_CONSENSUS.value
+
     def set_discussion_topic(self, topic: str):
         self._discussion_topic = topic
 
@@ -139,5 +150,5 @@ class Config(object):
 
     def _calc_min_turn_for_sysinterject(self) -> int:
         return (
-            SystemParams.MIN_PCT_BEFORE_SYSINTERJECT.value * self.max_n_o_turns // 100
+                SystemParams.MIN_PCT_BEFORE_SYSINTERJECT.value * self.max_n_o_turns // 100
         )

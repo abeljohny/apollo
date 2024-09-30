@@ -63,6 +63,7 @@ class ElementNames(Enum):
     VIEW_TOGGLE = "viewToggle"
     BIAS_TOGGLE = "biasToggle"
     LAWYER_TOGGLE = "lawyerToggle"
+    CONSENSUS_TOGGLE = "consensusToggle"
 
 
 class SystemParams(Enum):
@@ -109,6 +110,8 @@ class Settings(Enum):
     HIDE_HARMFULNESS = "off"
     LAWYER_ON = "on"
     LAWYER_OFF = "off"
+    MODERATE_CONSENSUS = "on"
+    HIGH_CONSENSUS = "off"
 
 
 class Consensus(Enum):
