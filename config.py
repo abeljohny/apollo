@@ -1,6 +1,6 @@
 import random
 
-from constants import Defaults, FilePaths, Settings, SystemParams
+from constants import Consensus, Defaults, FilePaths, Settings, SystemParams
 from utils.file_manager import FileManager
 from utils.persistence import Persistence
 
@@ -73,6 +73,15 @@ class Config(object):
     @property
     def consensus(self) -> str:
         return self._consensus
+
+    @property
+    def numerical_consensus(self) -> float:
+        if self._consensus == Settings.MODERATE_CONSENSUS.value:
+            return Consensus.MODERATE_CONSENSUS.value
+        elif self._consensus == Settings.HIGH_CONSENSUS.value:
+            return Consensus.HIGH_CONSENSUS.value
+        else:
+            return Consensus.NO_CONSENSUS.value
 
     @property
     def discussion_topic(self) -> str:

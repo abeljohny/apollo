@@ -4,7 +4,7 @@ import numpy as np
 from skfuzzy import control as ctrl
 from skfuzzy.membership import gaussmf, trimf
 
-from constants import Consensus, Settings
+from constants import Consensus
 
 
 class FuzzyConsensus:
@@ -55,9 +55,9 @@ class FuzzyConsensus:
         if result < 0.3:
             return Consensus.NO_CONSENSUS.value
         elif result < 0.7:
-            return Settings.MODERATE_CONSENSUS.value  # we use Settings here to interop with config
+            return Consensus.MODERATE_CONSENSUS.value
         else:
-            return Settings.HIGH_CONSENSUS.value
+            return Consensus.HIGH_CONSENSUS.value
 
     def extract_input_vars_and_calculate(self, text: str) -> float:
         pattern = r'\[(?:Agreement: (0\.\d+), )?Confidence: (0\.\d+)\]'

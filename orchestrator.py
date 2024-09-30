@@ -172,7 +172,7 @@ class Orchestrator:
 
             if self._consensus_detector.extract_input_vars_and_calculate(
                     response
-            ) == self._config.consensus and self._turn["turn"] > 0:
+            ) >= self._config.numerical_consensus and self._turn["turn"] > 0:
                 self._consensus["intermediate_consensus_reached"] = True
                 self._consensus["agents_in_consensus"].add(agent.name)
             else:  # clear intermediate consensuses if the agent next in discussion does not also agree i.e. the agent
