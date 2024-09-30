@@ -175,6 +175,10 @@ class Orchestrator:
             ) == Consensus.FULL_CONSENSUS.value and self._turn["turn"] > 0:
                 self._consensus["intermediate_consensus_reached"] = True
                 self._consensus["agents_in_consensus"].add(agent.name)
+            else:  # clear intermediate consensuses if the agent next in discussion does not also agree i.e. the agent
+                # has introduced new perspectives into the discussion invalidating any prior reached consensuses
+                self._consensus["intermediate_consensus_reached"] = False
+                self._consensus["agents_in_consensus"].clear()
 
             if self.conversational_marker_found(
                     marker=ConversationalMarkers.RAG_QUERY.value,
